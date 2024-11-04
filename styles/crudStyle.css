@@ -31,7 +31,7 @@ main > div{
     border-radius: 5px;
 
     background-color: #B9E5E8;
-    color: #7AB2D3;
+    color: #4A628A;
 }
 
 form{
@@ -45,6 +45,34 @@ form{
     border-radius: 5px;
     background-color: #7AB2D3;
     color: #7AB2D3;
+
+   
+}
+
+
+table{
+    width: 95%; 
+    margin: 15px;
+    border-collapse: collapse;
+}
+th{
+    text-align: center;
+}
+th, td {
+    border-radius: 5px;
+    padding: 8px; 
+    width: 14.2%;
+    
+}
+
+button:first-child{
+    background-color: lightgoldenrodyellow;
+    border-color: #4A628A;
+}
+
+button:last-child{
+    background-color: lightcoral;
+    border-color: #4A628A;
 }
 
 form > div{
@@ -58,5 +86,3 @@ form > div{
 input{
     width: 95%;
     padding: 5px;
-
-}
