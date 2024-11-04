@@ -1,65 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eventos</title>
-    <link rel="stylesheet" href="../styles/crudStyle.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Eventos</title>
+	<link rel="stylesheet" href="../styles/crudStyle.css">
 </head>
 <body>
-    <header>
-        <h1>Eventos</h1>
-    </header>
+	<header>
+		<h1>Eventos</h1>
+	</header>
 
-    <main>
-        <div>
-            <table>
-                <thead>
-                    <th>Id</th>
-                    <th>Nombre Evento</th>
-                    <th>Tipo Deporte</th>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Ubicacion</th>
-                </thead>
+	<main>
+		<div>
+			<table>
+				<thead>
+					<th>Id</th>
+					<th>Nombre Evento</th>
+					<th>Tipo Deporte</th>
+					<th>Fecha</th>
+					<th>Hora</th>
+					<th>Ubicacion</th>
+				</thead>
 
-                <tbody>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button>Editar</button>
-                        <button>Eliminar</button>
-                    </td>
-                </tbody>
-            </table>
-        </div>
+				<tbody>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>
+						<button>Editar</button>
+						<button>Eliminar</button>
+					</td>
+				</tbody>
+			</table>
+		</div>
 
+		<form>
+			<div>
+				<input type="text" placeholder="Nombre del Evento" required>
+				<input type="text" placeholder="Deporte" required>
+				<div>
+					<input type="datetime-local" required>
+					<section>
+						<option value=""></option>
+						<option value=""></option>
+					</section>
+				</div>
+				<input type="text" placeholder="Ubicacion" required>
+				
+			</div>
+				
+			<div>
+				errores
+			</div>
+				
+			<button type="submit">Crear</button>
+		</form>
+	</main>
 
-        <form>
-            <div>
-                <input type="text" placeholder="Nombre del Evento" required>
-                <input type="text" placeholder="Deporte" required>
-                <div>
-                    <input type="datetime-local" required>
-                    <section>
-                        <option value=""></option>
-                        <option value=""></option>
-                    </section>
-                </div>
-                <input type="text" placeholder="Ubicacion" required>
-                
-            </div>
-            
-            <div>
-                errores
-            </div>
-            
-            <button type="submit">Crear</button>
-        </form>
-    </main>
+	<script>
+
+		async function fetchEventos() {
+			try {
+				const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=eventos")
+				
+				if (!response.ok) {
+					throw new Error("Error en la solicitud")
+				}
+				const events = await response.json()
+				
+				console.log(events)
+				
+				
+			} catch (error) {
+				console.error("Hubo un problema con la solicitud:", error)
+			}
+		}
+	
+		fetchEventos()
+			
+	
+		</script>
 </body>
 </html>
