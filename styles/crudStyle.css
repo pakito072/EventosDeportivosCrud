@@ -31,10 +31,10 @@ div:first-child{
     border-radius: 5px;
 
     background-color: #B9E5E8;
-    color: #7AB2D3;
+    color: #4A628A;
 }
 
-div:last-child{
+form{
     width: 25%;
     height: 100%;
 
@@ -43,6 +43,29 @@ div:last-child{
 
     background-color: #7AB2D3;
     color: #7AB2D3;
+}
 
-   
+table{
+    width: 95%; 
+    margin: 15px;
+    border-collapse: collapse;
+}
+th{
+    text-align: center;
+}
+th, td {
+    border-radius: 5px;
+    padding: 8px; 
+    width: 14.2%;
+    
+}
+
+button:first-child{
+    background-color: lightgoldenrodyellow;
+    border-color: #4A628A;
+}
+
+button:last-child{
+    background-color: lightcoral;
+    border-color: #4A628A;
 }
