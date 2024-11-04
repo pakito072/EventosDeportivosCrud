@@ -65,12 +65,12 @@ th, td {
     
 }
 
-button:first-child{
+td > button:first-child{
     background-color: lightgoldenrodyellow;
     border-color: #4A628A;
 }
 
-button:last-child{
+td > button:last-child{
     background-color: lightcoral;
     border-color: #4A628A;
 }
