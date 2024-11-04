@@ -1,0 +1,32 @@
+body{
+    height: 100vh;
+    background-color: #DFF2EB;
+}
+
+header{
+    margin-bottom: 10px;
+}
+h1{
+    margin: 0;
+}
+
+main{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 90%;
+}
+
+div:first-child{
+    width: 70%;
+    height: 100%;
+
+    background-color: aqua;
+}
+
+div:last-child{
+    width: 25%;
+    height: 100%;
+
+    background-color: rgb(255, 136, 0);
+}
