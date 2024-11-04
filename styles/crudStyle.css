@@ -23,7 +23,7 @@ main{
     height: 90%;
 }
 
-div:first-child{
+main > div{
     width: 70%;
     height: 100%;
 
@@ -34,15 +34,29 @@ div:first-child{
     color: #7AB2D3;
 }
 
-div:last-child{
+form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
     width: 25%;
     height: 100%;
-
     border: solid 2px #B9E5E8;
     border-radius: 5px;
-
     background-color: #7AB2D3;
     color: #7AB2D3;
+}
 
-   
+form > div{
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+input{
+    width: 95%;
+    padding: 5px;
+
 }
