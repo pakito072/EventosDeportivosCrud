@@ -24,16 +24,7 @@
 				</thead>
 
 				<tbody>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td>
-						<button>Editar</button>
-						<button>Eliminar</button>
-					</td>
+					
 				</tbody>
 			</table>
 		</div>
@@ -50,7 +41,6 @@
 					</section>
 				</div>
 				<input type="text" placeholder="Ubicacion" required>
-				
 			</div>
 				
 			<div>
@@ -72,7 +62,29 @@
 				}
 				const events = await response.json()
 				
-				console.log(events)
+				if (events.length !== 0) {
+					const tbody = document.querySelector("tbody")
+
+					events.forEach(event => {
+						const tr = document.createElement('tr')
+						tr.innerHTML = `
+							<td>${event.id}</td>
+							<td>${event.nombre_evento}</td>
+							<td>${event.tipo_deporte}</td>
+							<td>${event.fecha}</td>
+							<td>${event.hora}</td>
+							<td>${event.ubicacion}</td>
+							<td>
+								<button onclick="editManager(${event.id})">Editar</button>
+								<button onclick="deleteEvent(${event.id})">Eliminar</button>
+							</td>
+						`
+						tbody.appendChild(tr)
+					})
+
+				}else{
+					alert("No se ha encontrado ningun evento registrado")
+				}
 				
 			} catch (error) {
 				console.error("Hubo un problema con la solicitud:", error)
@@ -80,8 +92,7 @@
 		}
 	
 		fetchEvents()
-			
-	
+		
 	</script>
 </body>
 </html>
