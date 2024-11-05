@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Eventos</title>
 	<link rel="stylesheet" href="../styles/crudStyle.css">
 </head>
+
 <body>
 	<header>
 		<h1>Eventos</h1>
@@ -32,7 +34,7 @@
 					<td></td>
 					<td>
 						<button>Editar</button>
-						<button>Eliminar</button>
+						<button onclick="deleteEvent(id)">Eliminar</button>
 					</td>
 				</tbody>
 			</table>
@@ -50,13 +52,13 @@
 					</section>
 				</div>
 				<input type="text" placeholder="Ubicacion" required>
-				
+
 			</div>
-				
+
 			<div>
 				errores
 			</div>
-				
+
 			<button type="submit">Crear</button>
 		</form>
 	</main>
@@ -66,23 +68,46 @@
 		async function fetchEventos() {
 			try {
 				const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=eventos")
-				
+
 				if (!response.ok) {
 					throw new Error("Error en la solicitud")
 				}
 				const events = await response.json()
-				
+
 				console.log(events)
-				
-				
+
+
 			} catch (error) {
 				console.error("Hubo un problema con la solicitud:", error)
 			}
 		}
-	
+
 		fetchEventos()
-			
-	
-		</script>
+
+		async function deleteEvent(id) {
+			if (confirm("¿Estás seguro que deseas eliminar este registro?")) {
+				try {
+					const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=eventos&id=" + id, {
+						method: "DELETE",
+						headers: {
+							"Content-Type": "application/json"
+						}
+					})
+
+					if (response.ok) {
+						alert("Registro eliminado con éxito")
+						fetchEventos()
+					} else {
+
+						alert("Error al eliminar el registro")
+					}
+
+				}catch (error) {
+					console.error("Error en la solicitud: " + error)
+				}
+			}
+		}
+	</script>
 </body>
+
 </html>
