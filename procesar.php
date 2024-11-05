@@ -38,10 +38,10 @@ function get($table){
 }
 
 function delete ($table, $id){
-  
+  echo $table, $id;
   $conn = conectarDB();
 
-  $stmt = $conn->prepare("DELETE FROM " . $table . " WHERE id = ?");
+  $stmt = $conn->prepare("DELETE FROM $table WHERE id = ?");
   $stmt->bind_param("i",$id);
 
   if ($stmt->execute()) {
@@ -59,11 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["table"])) {
   
   get($_GET["table"]);
 
-}
-
-if ($_SERVER["REQUEST_METHOD"] === "DELETE") {
-
-  parse_str(file_get_contents("php://input"),$data);
-  $table = isset
+}else if ($_SERVER["REQUEST_METHOD"] === "DELETE" && isset($_GET["table"]) && isset($_GET["id"])) {
   
+  delete($_GET["table"], $_GET["id"]);
 }

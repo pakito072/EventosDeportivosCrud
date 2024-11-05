@@ -26,16 +26,7 @@
 				</thead>
 
 				<tbody>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td>
-						<button>Editar</button>
-						<button onclick="deleteEvent(id)">Eliminar</button>
-					</td>
+					
 				</tbody>
 			</table>
 		</div>
@@ -97,6 +88,7 @@
 					if (response.ok) {
 						alert("Registro eliminado con éxito")
 						fetchEventos()
+
 					} else {
 
 						alert("Error al eliminar el registro")
