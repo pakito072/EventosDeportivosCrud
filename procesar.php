@@ -41,25 +41,34 @@ function get($table){
 function post($table, $data) {
   $conn = conectarDB();
 
-  $name = htmlspecialchars(trim($data['name']));
-  $email = htmlspecialchars(trim($data['email']));
-  $number = htmlspecialchars(trim($data['number']));
-
-  $columns = "";
-  if ($table === "organizadores") {
-    $columns = "(nombre, email, telefono)";
-    
-  }else if ($table === "eventos") {
-    $columns = "(nombre_evento, tipo_deporte, fecha, hora, ubicacion)";
-  }
+   $columns = "";
+   $values = [];
+   $types = "";
+ 
+   if ($table === "organizadores") {
+     $columns = "(nombre, email, telefono)";
+     $values = [$data['name'], $data['email'], $data['number']];
+     $types = "sss"; 
+   } else if ($table === "eventos") {
+     $columns = "(nombre_evento, deporte, fecha, ubicacion)";
+     $values = [
+       htmlspecialchars(trim($data['nombre_evento'])),
+       htmlspecialchars(trim($data['deporte'])),
+       htmlspecialchars(trim($data['fecha'])),
+       htmlspecialchars(trim($data['ubicacion']))
+     ];
+     $types = "ssss"; 
+   } 
   
-  $stmt = $conn->prepare("INSERT INTO $table $columns VALUES (?, ?, ?)");
-  $stmt->bind_param("sss", $name, $email, $number);
+   $placeholders = implode(", ", array_fill(0, count($values), "?"));
+   $stmt = $conn->prepare("INSERT INTO $table $columns VALUES ($placeholders)");
+ 
+   $stmt->bind_param($types, ...$values);
 
-  if ($stmt->execute()) {
-      echo json_encode(["success" => true, "message" => "Registro insertado correctamente."]);
+   if ($stmt->execute()) {
+    echo json_encode(["success" => true, "message" => "Registro insertado correctamente."]);
   } else {
-      echo json_encode(["success" => false, "message" => "Error al insertar el registro: " . $stmt->error]);
+    echo json_encode(["success" => false, "message" => "Error al insertar el registro: " . $stmt->error]);
   }
 
   $stmt->close();

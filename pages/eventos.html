@@ -38,18 +38,18 @@
 			</table>
 		</div>
 
-		<form>
+		<form method="post" action="../procesar.php?table=eventos">
 			<div>
-				<input type="text" placeholder="Nombre del Evento" required>
-				<input type="text" placeholder="Deporte" required>
+				<input type="text" name="nombre_evento" id="nombre_evento" placeholder="Nombre del Evento" required>
+				<input type="text" name="deporte" id="deporte" placeholder="Deporte" required>
 				<div>
-					<input type="datetime-local" required>
+					<input type="datetime-local" name="fecha" id="fecha" required>
 					<section>
 						<option value=""></option>
 						<option value=""></option>
 					</section>
 				</div>
-				<input type="text" placeholder="Ubicacion" required>
+				<input type="text" name="ubicacion" id="ubicacion" placeholder="Ubicacion" required>
 				
 			</div>
 				
