@@ -38,9 +38,42 @@ function get($table){
 }
 
 
+function post($table, $data) {
+  $conn = conectarDB();
+
+  $name = htmlspecialchars(trim($data['name']));
+  $email = htmlspecialchars(trim($data['email']));
+  $number = htmlspecialchars(trim($data['number']));
+
+  $columns = "";
+  if ($table === "organizadores") {
+    $columns = "(nombre, email, telefono)";
+    
+  }else if ($table === "eventos") {
+    $columns = "(nombre_evento, tipo_deporte, fecha, hora, ubicacion)";
+  }
+  
+  $stmt = $conn->prepare("INSERT INTO $table $columns VALUES (?, ?, ?)");
+  $stmt->bind_param("sss", $name, $email, $number);
+
+  if ($stmt->execute()) {
+      echo json_encode(["success" => true, "message" => "Registro insertado correctamente."]);
+  } else {
+      echo json_encode(["success" => false, "message" => "Error al insertar el registro: " . $stmt->error]);
+  }
+
+  $stmt->close();
+  $conn->close();
+}
+
+
 
 if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["table"])) {
   
   get($_GET["table"]);
 
+}else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET["table"])) {
+  
+  post($_GET['table'], $_POST);
 }
+
