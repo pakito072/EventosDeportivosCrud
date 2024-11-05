@@ -26,7 +26,7 @@
 				</thead>
 
 				<tbody>
-					
+
 				</tbody>
 			</table>
 		</div>
@@ -76,7 +76,7 @@
 		fetchEventos()
 
 		async function deleteEvent(id) {
-			if (confirm("¿Estás seguro que deseas eliminar este registro?")) {
+			if (confirm("¿Estás seguro que deseas eliminar este evento?")) {
 				try {
 					const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=eventos&id=" + id, {
 						method: "DELETE",
@@ -86,15 +86,15 @@
 					})
 
 					if (response.ok) {
-						alert("Registro eliminado con éxito")
+						alert("Evento eliminado con éxito")
 						fetchEventos()
 
 					} else {
 
-						alert("Error al eliminar el registro")
+						alert("Error al eliminar el evento")
 					}
 
-				}catch (error) {
+				} catch (error) {
 					console.error("Error en la solicitud: " + error)
 				}
 			}

@@ -1,56 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organizadores</title>
-    <link rel="stylesheet" href="../styles/crudStyle.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Organizadores</title>
+	<link rel="stylesheet" href="../styles/crudStyle.css">
 </head>
+
 <body>
-    <header>
-        <h1>Organizadores</h1>
-    </header>
+	<header>
+		<h1>Organizadores</h1>
+	</header>
 
-    <main>
-        <div>
+	<main>
+		<div>
 
-            <table>
-                <thead>
-                    <th>Id</th>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Telefono</th>
-                    <th></th>
-                </thead>
+			<table>
+				<thead>
+					<th>Id</th>
+					<th>Nombre</th>
+					<th>Email</th>
+					<th>Telefono</th>
+					<th></th>
+				</thead>
 
-                <tbody>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button>Editar</button>
-                        <button>Eliminar</button>
-                    </td>
-                </tbody>
-            </table>
-        </div>
+				<tbody>
+
+				</tbody>
+			</table>
+		</div>
 
 
-        <form>
-            <div>
-                <input type="text" id="name" name="name" placeholder="Nombre" required>
-                <input type="email" id="email" name="email" placeholder="Correo" required>
-                <input type="text" id="number" name="number" placeholder="Telefono" required>
-            </div>
-            
-            
-            <div>
-                errores
-            </div>
-            
-            <button type="submit">Crear</button>
-        </form>
-    </main>
+		<form>
+			<div>
+				<input type="text" id="name" name="name" placeholder="Nombre" required>
+				<input type="email" id="email" name="email" placeholder="Correo" required>
+				<input type="text" id="number" name="number" placeholder="Telefono" required>
+			</div>
+
+
+			<div>
+				errores
+			</div>
+
+			<button type="submit">Crear</button>
+		</form>
+	</main>
+	<script>
+		async function deleteManager(id) {
+			if (confirm("¿Estás seguro que deseas eliminar este organizador?")) {
+				try {
+					const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores&id=" + id, {
+						method: "DELETE",
+						headers: {
+							"Content-Type": "application/json"
+						}
+					})
+
+					if (response.ok) {
+						alert("Organizador eliminado con éxito")
+						fetchEventos()
+
+					} else {
+						alert("Error al eliminar el organizador")
+						if (response.status === 403) {
+							alert("No se puede eliminar el organizador porque tiene eventos asociados")
+						}
+					}
+
+				} catch (error) {
+					console.error("Error en la solicitud: " + error)
+				}
+			}
+		}
+	</script>
 </body>
+
 </html>

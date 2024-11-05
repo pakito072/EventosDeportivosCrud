@@ -1,8 +1,8 @@
 <?php
 
-function conectarDB() {
+function conectarDB(){
 
-  $host = "localhost"; 
+  $host = "localhost";
   $user = "root";
   $password = "";
   $base_datos = "eventos_deportivos";
@@ -15,14 +15,14 @@ function conectarDB() {
 
   return $connection;
 }
-  
+
 
 function get($table){
   $conn = conectarDB();
 
   $sql = "SELECT * FROM " . $table;
   $result = $conn->query($sql);
-  
+
   $events = [];
   if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
@@ -37,16 +37,30 @@ function get($table){
 
 }
 
-function delete ($table, $id){
-  echo $table, $id;
+function delete($table, $id){
   $conn = conectarDB();
 
+  if ($table === "organizadores") {
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM eventos WHERE id_organizador = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+
+    if ($row["count"] > 0) {
+      http_response_code(403);
+      $stmt->close();
+      $conn->close();
+      return;
+    }
+  }
+
   $stmt = $conn->prepare("DELETE FROM $table WHERE id = ?");
-  $stmt->bind_param("i",$id);
+  $stmt->bind_param("i", $id);
 
   if ($stmt->execute()) {
     http_response_code(200);
-  }else{
+  } else {
     http_response_code(500);
   }
 
@@ -56,10 +70,10 @@ function delete ($table, $id){
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["table"])) {
-  
+
   get($_GET["table"]);
 
-}else if ($_SERVER["REQUEST_METHOD"] === "DELETE" && isset($_GET["table"]) && isset($_GET["id"])) {
-  
+} else if ($_SERVER["REQUEST_METHOD"] === "DELETE" && isset($_GET["table"]) && isset($_GET["id"])) {
+
   delete($_GET["table"], $_GET["id"]);
 }
