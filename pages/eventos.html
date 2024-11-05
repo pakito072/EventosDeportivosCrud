@@ -63,7 +63,7 @@
 
 	<script>
 
-		async function fetchEventos() {
+		async function fetchEvents() {
 			try {
 				const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=eventos")
 				
@@ -74,15 +74,14 @@
 				
 				console.log(events)
 				
-				
 			} catch (error) {
 				console.error("Hubo un problema con la solicitud:", error)
 			}
 		}
 	
-		fetchEventos()
+		fetchEvents()
 			
 	
-		</script>
+	</script>
 </body>
 </html>

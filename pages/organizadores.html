@@ -1,56 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organizadores</title>
-    <link rel="stylesheet" href="../styles/crudStyle.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organizadores</title>
+  <link rel="stylesheet" href="../styles/crudStyle.css">
 </head>
 <body>
-    <header>
-        <h1>Organizadores</h1>
-    </header>
+  <header>
+    <h1>Organizadores</h1>
+  </header>
+  <main>
+    <div>
 
-    <main>
-        <div>
+      <table>
+        <thead>
+          <th>Id</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Telefono</th>
+          <th></th>
+        </thead>
 
-            <table>
-                <thead>
-                    <th>Id</th>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Telefono</th>
-                    <th></th>
-                </thead>
+        <tbody>
+          
+        </tbody>
+      </table>
+    </div>
 
-                <tbody>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button>Editar</button>
-                        <button>Eliminar</button>
-                    </td>
-                </tbody>
-            </table>
-        </div>
+    <form>
+      <div>
+        <input type="text" id="name" name="name" placeholder="Nombre" required>
+        <input type="email" id="email" name="email" placeholder="Correo" required>
+        <input type="text" id="number" name="number" placeholder="Telefono" required>
+      </div>
+        
+        
+      <div>
+        errores
+      </div>
+        
+      <button type="submit">Crear</button>
+    </form>
 
+    <script>
 
-        <form>
-            <div>
-                <input type="text" id="name" name="name" placeholder="Nombre" required>
-                <input type="email" id="email" name="email" placeholder="Correo" required>
-                <input type="text" id="number" name="number" placeholder="Telefono" required>
-            </div>
+      async function fetchManagers() {
+        try {
+          const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores")
+          
+          if (!response.ok) {
+            throw new Error("Error en la solicitud")
+          }
+          const managers = await response.json()
+          console.log(managers);
+          
+          if (managers) {
+            const tbody = document.querySelector("tbody")
+
+            managers.forEach(manager => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td>${manager.id}</td>
+                <td>${manager.nombre}</td>
+                <td>${manager.email}</td>
+                <td>${manager.telefono}</td>
+                <td>
+                  <button onclick="eliminarManager(${manager.id})">Eliminar</button>
+                </td>
+              `;
+              tbody.appendChild(tr);
+            });
+          }
             
-            
-            <div>
-                errores
-            </div>
-            
-            <button type="submit">Crear</button>
-        </form>
-    </main>
+        } catch (error) {
+          console.error("Hubo un problema con la solicitud:", error)
+        }
+      }
+    
+      fetchManagers()
+              
+      
+    </script>
+  </main>
 </body>
 </html>

@@ -45,8 +45,6 @@ form{
     border-radius: 5px;
     background-color: #7AB2D3;
     color: #7AB2D3;
-
-   
 }
 
 
@@ -55,14 +53,12 @@ table{
     margin: 15px;
     border-collapse: collapse;
 }
-th{
-    text-align: center;
-}
+
 th, td {
     border-radius: 5px;
     padding: 8px; 
     width: 14.2%;
-    
+    text-align: center;
 }
 
 td > button:first-child{
