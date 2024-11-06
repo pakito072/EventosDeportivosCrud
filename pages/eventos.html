@@ -21,9 +21,11 @@
 					<th>Fecha</th>
 					<th>Hora</th>
 					<th>Ubicacion</th>
+					<th>Organizador</th>
 				</thead>
 
 				<tbody>
+					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>
@@ -44,10 +46,12 @@
 				<input type="text" name="deporte" id="deporte" placeholder="Deporte" required>
 				<div>
 					<input type="datetime-local" name="fecha" id="fecha" required>
-					<section>
+
+					<select name="idOrganizador" id="idOrganizador">
+						<option selected disabled>Selecciona un Organizador</option>
 						<option value=""></option>
-						<option value=""></option>
-					</section>
+					</select>
+					
 				</div>
 				<input type="text" name="ubicacion" id="ubicacion" placeholder="Ubicacion" required>
 				
@@ -81,8 +85,46 @@
 		}
 	
 		fetchEventos()
+
+
+		async function fetchOrganizadores() {
+			try{
+				const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores")
+				
+				if (!response.ok) {
+					throw new Error("Error en la solicitud")
+				}
+				const managers = await response.json()
+				
+				console.log(managers)
+
+
+				if (managers.length !== 0) {
+					const select = document.querySelector("select")
+
+					managers.forEach(manager => {
+						const option = document.createElement('option')
+						option.innerHTML = manager.nombre
+						option.value = manager.id
+						select.appendChild(option)
+					})
+					
+
+				}else{
+					alert("No se ha encontrado ningun evento registrado")
+				}
+				
+				
+				
+			} catch (error) {
+				console.error("Hubo un problema con la solicitud:", error)
+			}
+
 			
-	
+		}
+			
+		fetchOrganizadores()
+	 
 		</script>
 </body>
 </html>

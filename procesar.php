@@ -41,31 +41,37 @@ function get($table){
 function post($table, $data) {
   $conn = conectarDB();
 
-   $columns = "";
-   $values = [];
-   $types = "";
- 
-   if ($table === "organizadores") {
-     $columns = "(nombre, email, telefono)";
-     $values = [$data['name'], $data['email'], $data['number']];
-     $types = "sss"; 
-   } else if ($table === "eventos") {
-     $columns = "(nombre_evento, deporte, fecha, ubicacion)";
-     $values = [
-       htmlspecialchars(trim($data['nombre_evento'])),
-       htmlspecialchars(trim($data['deporte'])),
-       htmlspecialchars(trim($data['fecha'])),
-       htmlspecialchars(trim($data['ubicacion']))
-     ];
-     $types = "ssss"; 
-   } 
-  
-   $placeholders = implode(", ", array_fill(0, count($values), "?"));
-   $stmt = $conn->prepare("INSERT INTO $table $columns VALUES ($placeholders)");
- 
-   $stmt->bind_param($types, ...$values);
+  $columns = "";
+  $values = [];
+  $types = "";
 
-   if ($stmt->execute()) {
+  if ($table === "organizadores") {
+    $columns = "(nombre, email, telefono)";
+    $values = [$data['name'], $data['email'], $data['number']];
+    $types = "sss"; 
+  } else if ($table === "eventos") {
+  $fechaHora = $_POST['fecha'];
+    list($fecha, $hora) = explode('T', $fechaHora);
+
+    $columns = "(nombre_evento, tipo_deporte, fecha, hora, ubicacion, id_organizador)";
+    $values = [
+      htmlspecialchars(trim($data['nombre_evento'])),
+      htmlspecialchars(trim($data['deporte'])),
+      htmlspecialchars($fecha),
+      htmlspecialchars($hora),
+      htmlspecialchars(trim($data['ubicacion'])),
+      $data['idOrganizador']
+    ];
+    
+    $types = "ssssss"; 
+  } 
+
+  $placeholders = implode(", ", array_fill(0, count($values), "?"));
+  $stmt = $conn->prepare("INSERT INTO $table $columns VALUES ($placeholders)");
+
+  $stmt->bind_param($types, ...$values);
+
+  if ($stmt->execute()) {
     echo json_encode(["success" => true, "message" => "Registro insertado correctamente."]);
   } else {
     echo json_encode(["success" => false, "message" => "Error al insertar el registro: " . $stmt->error]);
