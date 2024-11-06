@@ -28,61 +28,21 @@
       </table>
     </div>
 
-    <form>
-      <div>
-        <input type="text" id="name" name="name" placeholder="Nombre" required>
-        <input type="email" id="email" name="email" placeholder="Correo" required>
-        <input type="text" id="number" name="number" placeholder="Telefono" required>
-      </div>
-        
-        
-      <div>
-        errores
-      </div>
-        
-      <button type="submit">Crear</button>
-    </form>
-
-    <script>
-
-      async function fetchManagers() {
-        try {
-          const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores")
-          
-          if (!response.ok) {
-            throw new Error("Error en la solicitud")
-          }
-          const managers = await response.json()
-          
-          if (managers.length !== 0) {
-            const tbody = document.querySelector("tbody")
-
-            managers.forEach(manager => {
-              const tr = document.createElement('tr');
-              tr.innerHTML = `
-                <td>${manager.id}</td>
-                <td>${manager.nombre}</td>
-                <td>${manager.email}</td>
-                <td>${manager.telefono}</td>
-                <td>
-                  <button onclick="deleteManager(${manager.id})">Eliminar</button>
-                </td>
-              `;
-              tbody.appendChild(tr);
-            });
-
-          }else{
-					  alert("No se ha encontrado ningun organizador registrado")
-				  }
+        <form method="post" action="../procesar.php?table=organizadores">
+            <div>
+                <input type="text" id="name" name="name" placeholder="Nombre" required>
+                <input type="email" id="email" name="email" placeholder="Correo" required>
+                <input type="text" id="number" name="number" placeholder="Telefono" required>
+            </div>
             
-        } catch (error) {
-          console.error("Hubo un problema con la solicitud:", error)
-        }
-      }
+            
+            <div>
+                errores
+            </div>
+            
+            <button type="submit">Crear</button>
+        </form>
+    </main>
     
-      fetchManagers()
-              
-    </script>
-  </main>
 </body>
 </html>

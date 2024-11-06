@@ -57,18 +57,22 @@ table{
 th, td {
     border-radius: 5px;
     padding: 8px; 
-    width: 14.2%;
-    text-align: center;
+    width: 12.5%;
+    
 }
 
 td > button:first-child{
-    background-color: lightgoldenrodyellow;
-    border-color: #4A628A;
+    background-color: #007CFF;
+    border-color: #007CFF;
+    color: #f5f5f5;
+    border-radius: 5px;
 }
 
 td > button:last-child{
-    background-color: lightcoral;
-    border-color: #4A628A;
+    background-color: #DC3544;
+    border-color: #DC3544;
+    color: #f5f5f5;
+    border-radius: 5px;
 }
 
 form > div{
