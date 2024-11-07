@@ -12,7 +12,6 @@ function conectarDB() {
   if ($connection->connect_error) {
     die("Error de conexión: " . $connection->connect_error);
   }
-
   return $connection;
 }
   
@@ -34,7 +33,6 @@ function get($table){
   echo json_encode($events);
 
   $conn->close();
-
 }
 
 
@@ -68,7 +66,6 @@ function post($table, $data) {
 
   $placeholders = implode(", ", array_fill(0, count($values), "?"));
   $stmt = $conn->prepare("INSERT INTO $table $columns VALUES ($placeholders)");
-
   $stmt->bind_param($types, ...$values);
 
   if ($stmt->execute()) {

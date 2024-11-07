@@ -1,7 +1,6 @@
 body{
     height: 95vh;
     background-color: #DFF2EB;
-
     margin: 0;
     padding: 20px;
 }
@@ -26,10 +25,8 @@ main{
 main > div{
     width: 70%;
     height: 100%;
-
     border: solid 2px #7AB2D3;
     border-radius: 5px;
-
     background-color: #B9E5E8;
     color: #4A628A;
 }
