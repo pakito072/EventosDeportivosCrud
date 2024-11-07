@@ -1,7 +1,5 @@
 <?php
-
 function conectarDB() {
-
   $host = "localhost"; 
   $user = "root";
   $password = "";
@@ -32,12 +30,9 @@ function get($table){
 
   header("Content-Type: application/json");
   echo json_encode($events);
-
   $conn->close();
 
 }
-
-
 
 if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["table"])) {
   
