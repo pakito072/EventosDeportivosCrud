@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Eventos</title>
 	<link rel="stylesheet" href="../styles/crudStyle.css">
 </head>
+
 <body>
 	<header>
 		<h1>Eventos</h1>
@@ -45,11 +47,11 @@
 				<input type="text" name="ubicacion" id="ubicacion" placeholder="Ubicacion" required>
 				
 			</div>
-				
+
 			<div>
 				<ul id="errorList"></ul>
 			</div>
-				
+
 			<button type="submit">Crear</button>
 		</form>
 	</main>
@@ -57,7 +59,7 @@
 		async function getEvents() {
 			try {
 				const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=eventos")
-				
+
 				if (!response.ok) {
 					throw new Error("Error en la solicitud")
 				}
@@ -209,6 +211,34 @@
       await postEvents()     
 
     })
+
+		fetchEventos()
+
+		async function deleteEvent(id) {
+			if (confirm("¿Estás seguro que deseas eliminar este evento?")) {
+				try {
+					const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=eventos&id=" + id, {
+						method: "DELETE",
+						headers: {
+							"Content-Type": "application/json"
+						}
+					})
+
+					if (response.ok) {
+						alert("Evento eliminado con éxito")
+						fetchEventos()
+
+					} else {
+
+						alert("Error al eliminar el evento")
+					}
+
+				} catch (error) {
+					console.error("Error en la solicitud: " + error)
+				}
+			}
+		}
 	</script>
 </body>
+
 </html>
