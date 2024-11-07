@@ -26,7 +26,7 @@
       </table>
     </div>
 
-        <form method="post" action="../procesar.php?table=organizadores">
+        <form>
             <div>
                 <input type="text" id="name" name="name" placeholder="Nombre" required>
                 <input type="email" id="email" name="email" placeholder="Correo" required>
@@ -34,15 +34,15 @@
             </div>
             
             <div>
-                errores
+              <ul id="errorList"></ul>
             </div>
             
-            <button type="submit">Crear</button>
+            <button id="btnForm" type="submit">Crear</button>
         </form>
     </main>
     <script>
 
-      async function fetchManagers() {
+      async function getManagers() {
         try {
           const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores")
           
@@ -55,7 +55,12 @@
           if (managers.length !== 0) {
             const tbody = document.querySelector("tbody")
 
-            managers.forEach(manager => {`
+            managers.forEach(manager => {
+              const tr = document.createElement('tr')
+
+						  tr.innerHTML = `
+                <td>${manager.id}</td>
+                <td>${manager.nombre}</td>
                 <td>${manager.email}</td>
                 <td>${manager.telefono}</td>
                 <td>
@@ -74,8 +79,75 @@
         }
       }
 
-      fetchManagers()
+      getManagers()
 
+
+
+      async function postManager() {
+        
+        const inputName = document.getElementById("name").value
+        const inputEmail = document.getElementById("email").value
+        const inputNumber = document.getElementById("number").value
+        const ulErrors = document.getElementById("errorList")
+        const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        
+        console.log("carga");
+        
+        ulErrors.innerText = ""
+        let errorList = []
+
+        if (inputName.length < 2) {
+          errorList.push("El nombre debe contener minimo dos caracteres")
+        }
+
+        if (regexCorreo.test(email)) {
+          errorList.push("Por favor, ingrese un correo electronico valido")
+        }
+
+        if ( inputNumber === 9) {
+          errorList.push("El numero tiene que tener 9 digitos")
+        }
+
+
+        if (errorList.length > 0) {
+
+          errorList.forEach(error => {
+            const li = document.createElement("li");
+            li.textContent = error;
+            ulErrors.appendChild(li);
+          });
+
+        } else{
+        
+          try{
+            const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores", {
+              method: "POST", 
+              headers: {
+                "Content-Type": "application/json"
+              },
+              
+              body: JSON.stringify({
+                name: inputName,
+                email: inputEmail,
+                number: inputNumber
+              })
+            });
+
+            
+            console.log(response);
+            
+
+          }catch(error){
+            console.error(error);
+          }
+        } 
+      }
+
+      document.querySelector("form").addEventListener("submit", async (event) => {
+      event.preventDefault(); 
+      await postManager(); 
+    });
+      
     </script>
 </body>
 </html>

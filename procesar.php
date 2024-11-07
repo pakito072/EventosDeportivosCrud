@@ -66,9 +66,11 @@ function post($table, $data) {
   $stmt->bind_param($types, ...$values);
 
   if ($stmt->execute()) {
-    echo json_encode(["success" => true, "message" => "Registro insertado correctamente."]);
+    http_response_code(201); 
+    json_encode(["success" => true, "message" => "Registro insertado correctamente."]);
   } else {
-    echo json_encode(["success" => false, "message" => "Error al insertar el registro: " . $stmt->error]);
+    http_response_code(500); 
+    json_encode(["success" => false, "message" => "Error al insertar el registro: " . $stmt->error]);
   }
 
   $stmt->close();
@@ -80,7 +82,9 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["table"])) {
   get($_GET["table"]);
 
 }else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET["table"])) {
+
+  $data = json_decode(file_get_contents("php://input"), true);
   
-  post($_GET['table'], $_POST);
+  post($_GET['table'], $data);
 }
 
