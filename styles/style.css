@@ -2,8 +2,6 @@ body{
     height: 100vh;
     margin: 0;
     background-color: #DFF2EB;
-
-    
 }
 
 header{
@@ -26,12 +24,10 @@ a{
     display: flex;
     justify-content: center;
     align-items: center;
-
     font-size: 40px;
     padding: 20px 30px;
     text-decoration: none;
     color: black;
-
     border: solid 2px black;
     border-radius: 5px;
 }
