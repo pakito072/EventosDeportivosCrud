@@ -104,7 +104,9 @@
           errorList.push("Por favor, ingrese un correo electronico valido")
         }
 
-        if ( inputNumber === 9) {
+        if ( inputNumber.length !== 9) {
+          console.log();
+          
           errorList.push("El numero tiene que tener 9 digitos")
         }
 
@@ -133,8 +135,16 @@
               })
             });
 
-            
-            console.log(response);
+            console.log(response.status);
+           
+
+            if (response.status === 201) {
+              alert ("Se ha enviado correctamente");
+
+              getManagers()
+            }else if (response.status === 500) {
+              alert ("Error de servidor");
+            }
             
 
           }catch(error){

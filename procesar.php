@@ -67,10 +67,8 @@ function post($table, $data) {
 
   if ($stmt->execute()) {
     http_response_code(201); 
-    json_encode(["success" => true, "message" => "Registro insertado correctamente."]);
   } else {
     http_response_code(500); 
-    json_encode(["success" => false, "message" => "Error al insertar el registro: " . $stmt->error]);
   }
 
   $stmt->close();
