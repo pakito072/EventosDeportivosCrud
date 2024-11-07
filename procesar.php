@@ -41,11 +41,14 @@ function post($table, $data) {
   $types = "";
 
   if ($table === "organizadores") {
+
     $columns = "(nombre, email, telefono)";
     $values = [$data['name'], $data['email'], $data['number']];
     $types = "sss"; 
+
   } else if ($table === "eventos") {
-  $fechaHora = $_POST['fecha'];
+
+    $fechaHora = $data['fecha'];
     list($fecha, $hora) = explode('T', $fechaHora);
 
     $columns = "(nombre_evento, tipo_deporte, fecha, hora, ubicacion, id_organizador)";
@@ -57,8 +60,8 @@ function post($table, $data) {
       htmlspecialchars(trim($data['ubicacion'])),
       $data['idOrganizador']
     ];
-    
     $types = "ssssss"; 
+    
   } 
 
   $placeholders = implode(", ", array_fill(0, count($values), "?"));

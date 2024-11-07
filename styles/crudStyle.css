@@ -55,7 +55,7 @@ th, td {
     border-radius: 5px;
     padding: 8px; 
     width: 12.5%;
-    
+    text-align: center;
 }
 
 td > button:first-child{

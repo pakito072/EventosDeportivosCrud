@@ -66,9 +66,9 @@
                 <td>
                   <button onclick="deleteManager(${manager.id})">Eliminar</button>
                 </td>
-              `;
-              tbody.appendChild(tr);
-            });
+              `
+              tbody.appendChild(tr)
+            })
 
           }else{
 					  alert("No se ha encontrado ningun organizador registrado")
@@ -91,7 +91,7 @@
         const ulErrors = document.getElementById("errorList")
         const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         
-        console.log("carga");
+     
         
         ulErrors.innerText = ""
         let errorList = []
@@ -105,7 +105,7 @@
         }
 
         if ( inputNumber.length !== 9) {
-          console.log();
+          console.log()
           
           errorList.push("El numero tiene que tener 9 digitos")
         }
@@ -114,10 +114,10 @@
         if (errorList.length > 0) {
 
           errorList.forEach(error => {
-            const li = document.createElement("li");
-            li.textContent = error;
-            ulErrors.appendChild(li);
-          });
+            const li = document.createElement("li")
+            li.textContent = error
+            ulErrors.appendChild(li)
+          })
 
         } else{
         
@@ -133,30 +133,30 @@
                 email: inputEmail,
                 number: inputNumber
               })
-            });
+            })
 
-            console.log(response.status);
+            console.log(response.status)
            
 
             if (response.status === 201) {
-              alert ("Se ha enviado correctamente");
+              alert ("Se ha enviado correctamente")
 
               getManagers()
             }else if (response.status === 500) {
-              alert ("Error de servidor");
+              alert ("Error de servidor")
             }
             
 
           }catch(error){
-            console.error(error);
+            console.error(error)
           }
         } 
       }
 
       document.querySelector("form").addEventListener("submit", async (event) => {
-      event.preventDefault(); 
-      await postManager(); 
-    });
+      event.preventDefault() 
+      await postManager() 
+    })
       
     </script>
 </body>

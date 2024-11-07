@@ -47,14 +47,14 @@
 			</div>
 				
 			<div>
-				errores
+				<ul id="errorList"></ul>
 			</div>
 				
 			<button type="submit">Crear</button>
 		</form>
 	</main>
 	<script>
-		async function fetchEvents() {
+		async function getEvents() {
 			try {
 				const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=eventos")
 				
@@ -67,6 +67,7 @@
 				if (events.length !== 0) {
 					const tbody = document.querySelector("tbody")
 
+					tbody.innerText = ""
 					events.forEach(event => {
 						const tr = document.createElement('tr')
 						tr.innerHTML = `
@@ -92,9 +93,9 @@
 			}
 		}
 	
-		fetchEvents()
+		getEvents()
 
-		async function fetchOrganizadores() {
+		async function getOrganizadores() {
 			try{
 				const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores")
 				
@@ -125,8 +126,89 @@
 			
 		}
 			
-		fetchOrganizadores()
+		getOrganizadores()
 
+
+
+		async function postEvents() {
+        
+        const inputNameEvent = document.getElementById("nombre_evento").value
+        const inputSport = document.getElementById("deporte").value
+        const inputTime = document.getElementById("fecha").value
+		const inputHour = document.getElementById("hora")
+		const selectOrganizador = document.getElementById("idOrganizador").value
+		const inputLocation = document.getElementById("ubicacion").value
+		
+
+
+
+        const ulErrors = document.getElementById("errorList")
+         
+        ulErrors.innerText = ""
+        let errorList = []
+
+        if (inputNameEvent.length < 2) {
+          errorList.push("El nombre debe contener minimo dos caracteres")
+        }
+
+		if (inputSport.length < 2) {
+          errorList.push("El deporte debe contener minimo dos caracteres")
+        }
+
+        if (inputLocation.length < 2) {
+          errorList.push("La ubicacion debe contener minimo dos caracteres")
+        }
+
+        if (errorList.length > 0) {
+
+          errorList.forEach(error => {
+            const li = document.createElement("li")
+            li.textContent = error
+            ulErrors.appendChild(li)
+          })
+
+        } else{
+        
+          try{
+            const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=eventos", {
+              method: "POST", 
+              headers: {
+                "Content-Type": "application/json"
+              },
+              
+              body: JSON.stringify({
+                nombre_evento: inputNameEvent,
+                deporte: inputSport,
+                fecha: inputTime,
+				hora: inputHour,
+				idOrganizador: selectOrganizador,
+				ubicacion: inputLocation
+				
+              })
+            })
+
+            if (response.status === 201) {
+
+			  getEvents()
+              alert ("Se ha enviado correctamente")
+
+            }else if (response.status === 500) {
+
+              alert ("Error de servidor")
+
+            }
+            
+          }catch(error){
+            console.error(error)
+          }
+        } 
+      }
+
+      document.querySelector("form").addEventListener("submit", async (event) => {
+      event.preventDefault() 
+      await postEvents()     
+
+    })
 	</script>
 </body>
 </html>
