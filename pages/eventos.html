@@ -38,7 +38,7 @@
 			</div>
 
 			<div>
-				<h2><span id="action">Crear</span> Evento</h2>
+				<h2><span id="action">Crear</span> Evento <span id="id_evento"></span></h2>
 				<input type="text" name="nombre_evento" id="nombre_evento" placeholder="Nombre del Evento" required>
 				<input type="text" name="deporte" id="deporte" placeholder="Deporte" required>
 				<div>
@@ -207,13 +207,15 @@
 		document.querySelector("form").addEventListener("submit", async (event) => {
 			event.preventDefault()
 			const spanAction = document.getElementById("action");
+			const spanId = document.getElementById("id_evento");
 			if (spanAction.innerText === "Editar") {
+				const id = spanId.innerText;
+				await editEvent(id)
 				
-				
+			} else {
+				await postEvents()
+
 			}
-
-
-			await postEvents()
 
 		})
 
@@ -227,7 +229,9 @@
 			const selectOrganizador = document.getElementById("idOrganizador");
 			
 			const spanAction = document.getElementById("action");
-			spanAction.innerText = "Editar", id
+			const spanId = document.getElementById("id_evento");
+			spanAction.innerText = "Editar"
+			spanId.innerText = id
 
 			try {
 				const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?id=" + id)
@@ -244,7 +248,8 @@
 				inputLocation.value = eventEdit.ubicacion
 				selectOrganizador.value = eventEdit.id_organizador
 				
-
+				const submitBtn = document.querySelector("button[type='submit']")
+				submitBtn.innerText = "Editar"
 
 			} catch (error) {
 				console.error(error)
@@ -252,9 +257,41 @@
 			}
 		}
 
-		async function editEvent() {
-			
-		}
+		async function editEvent(id) {
+		const inputNameEvent = document.getElementById("nombre_evento").value
+    const inputSport = document.getElementById("deporte").value
+    const inputTime = document.getElementById("fecha").value
+		const inputHour = document.getElementById("hora")
+		const inputLocation = document.getElementById("ubicacion").value
+    const selectOrganizador = document.getElementById("idOrganizador").value
+
+    try {
+        const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?id=" + id, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nombre_evento: inputNameEvent,
+                deporte: inputSport,
+                fecha: inputTime,
+								hora: inputHour,
+                idOrganizador: selectOrganizador,
+                ubicacion: inputLocation
+            })
+        });
+
+        if (response.ok) {
+            alert("Evento editado correctamente");
+            getEvents();
+        } else {
+            alert("Error al editar el evento");
+        }
+    } catch (error) {
+        console.error("Error en la solicitud:", error);
+    }
+}
+
 
 		async function deleteEvent(id) {
 			if (confirm("¿Estás seguro que deseas eliminar este evento?")) {

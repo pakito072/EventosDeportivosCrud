@@ -120,13 +120,12 @@ function update($id, $data){
   $location = htmlspecialchars(trim($data['ubicacion']));
   $idOrganizador = $data['idOrganizador'];
   
-  $values = [$eventName, $sport, $date, $time, $location, $idOrganizador, $id];
   
   $stmt = $conn->prepare("UPDATE eventos SET nombre_evento = ?, tipo_deporte = ?, fecha = ?, hora = ?, ubicacion = ?, id_organizador = ? WHERE id = ?");
   $values[] = $id;
   $types .= "i";
 
-  $stmt->bind_param("ssssss", $values );
+  $stmt->bind_param("ssssssi",$eventName, $sport, $date, $time, $location, $idOrganizador, $id);
 
   if ($stmt->execute()) {
     http_response_code(200);
@@ -193,7 +192,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["table"])) {
 
   $data = json_decode(file_get_contents("php://input"), true);
   
-  update($_GET["table"], $_GET["id"], $data);
+  update($_GET["id"], $data);
 
 } else if ($_SERVER["REQUEST_METHOD"] === "DELETE" && isset($_GET["table"]) && isset($_GET["id"])) {
 
