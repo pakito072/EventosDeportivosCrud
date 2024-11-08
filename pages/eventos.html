@@ -52,8 +52,6 @@
 
 			</div>
 
-
-
 			<button type="submit">Crear</button>
 		</form>
 	</main>
@@ -67,12 +65,12 @@
 				}
 
 				const events = await response.json()
-
 				if (events.length !== 0) {
 					const tbody = document.querySelector("tbody")
 					tbody.innerText = ""
 
 					events.forEach(event => {
+						
 						const tr = document.createElement('tr')
 						tr.innerHTML = `
 							<td>${event.id}</td>
@@ -81,6 +79,7 @@
 							<td>${event.fecha}</td>
 							<td>${event.hora}</td>
 							<td>${event.ubicacion}</td>
+							<td>${event.nombre_organizador}</td>
 							<td>
 								<button onclick="editEvent(${event.id})">Editar</button>
 								<button onclick="deleteEvent(${event.id})">Eliminar</button>
@@ -107,8 +106,6 @@
 					throw new Error("Error en la solicitud")
 				}
 				const managers = await response.json()
-
-				console.log(managers)
 
 				if (managers.length !== 0) {
 					const select = document.querySelector("select")
@@ -214,7 +211,6 @@
 
 		})
 
-		fetchEventos()
 
 		// async function loadEvent(id) {
 		// 	try{

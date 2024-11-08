@@ -4,7 +4,7 @@ function conectarDB(){
 
   $host = "localhost";
   $user = "root";
-  $password = "";
+  $password = "1591Agus";
   $base_datos = "eventos_deportivos";
 
   $connection = new mysqli($host, $user, $password, $base_datos);
@@ -19,7 +19,14 @@ function conectarDB(){
 function get($table){
   $conn = conectarDB();
 
-  $sql = "SELECT * FROM " . $table;
+  if($table === "organizadores"){
+    $sql = "SELECT * FROM organizadores";
+  }else{
+    $sql = "SELECT eventos.*, organizadores.nombre AS nombre_organizador
+            FROM eventos
+            JOIN organizadores ON eventos.id_organizador = organizadores.id;";
+  }
+  
   $result = $conn->query($sql);
 
   $events = [];
