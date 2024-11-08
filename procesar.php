@@ -4,7 +4,7 @@ function conectarDB(){
 
   $host = "localhost";
   $user = "root";
-  $password = "1591Agus";
+  $password = "";
   $base_datos = "eventos_deportivos";
 
   $connection = new mysqli($host, $user, $password, $base_datos);
@@ -83,18 +83,22 @@ function post($table, $data){
   }
 }
 
-function getById($table, $id) {
+function getById($id) {
   $conn = conectarDB();
 
-  $stmt = $conn->prepare("SELECT * FROM $table WHERE id = ?");
+  $stmt = $conn->prepare("SELECT * FROM eventos WHERE id = ?");
   $stmt->bind_param("i", $id);
   $stmt->execute();
   $result = $stmt->get_result();
 
+  
+
   if ($result->num_rows > 0) {
+
     $row = $result->fetch_assoc();
     header("Content-Type: application/json");
     echo json_encode($row);
+    
   } else {
     http_response_code(404);
   }
@@ -103,39 +107,26 @@ function getById($table, $id) {
   $conn->close();
 }
 
-function update($table, $id, $data){
+function update($id, $data){
   $conn = conectarDB();
 
-  $set = [];
   $values = [];
   $types = "";
 
-
-  if ($table === "eventos") {
-    $set = "nombre_evento = ?";
-    $set = "tipo_deporte = ?";
-    $set = "fecha = ?";
-    $set = "hora = ?";
-    $set = "ubicacion = ?";
-    $set = "id_organizador = ?";
-    $values = [
-      htmlspecialchars(trim($data['nombre_evento'])),
-      htmlspecialchars(trim($data['deporte'])),
-      htmlspecialchars($data['fecha']),
-      htmlspecialchars($data['hora']),
-      htmlspecialchars(trim($data['ubicacion'])),
-      $data['idOrganizador']
-    ];
-
-    $types = "ssssss";
-  }
-
-  $setString = implode(", ", $set);
-  $stmt = $conn->prepare("UPDATE $table SET $setString WHERE id = ?");
+  $eventName = htmlspecialchars(trim($data['nombre_evento']));
+  $sport = htmlspecialchars(trim($data['deporte']));
+  $date = htmlspecialchars($data['fecha']);
+  $time = htmlspecialchars($data['hora']);
+  $location = htmlspecialchars(trim($data['ubicacion']));
+  $idOrganizador = $data['idOrganizador'];
+  
+  $values = [$eventName, $sport, $date, $time, $location, $idOrganizador, $id];
+  
+  $stmt = $conn->prepare("UPDATE eventos SET nombre_evento = ?, tipo_deporte = ?, fecha = ?, hora = ?, ubicacion = ?, id_organizador = ? WHERE id = ?");
   $values[] = $id;
   $types .= "i";
 
-  $stmt->bind_param($types, ...$values);
+  $stmt->bind_param("ssssss", $values );
 
   if ($stmt->execute()) {
     http_response_code(200);
@@ -188,6 +179,10 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["table"])) {
 
   get($_GET["table"]);
 
+} else if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["id"])) {
+
+  getById($_GET["id"]);
+  
 } else if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_GET["table"])) {
 
   $data = json_decode(file_get_contents("php://input"), true);
