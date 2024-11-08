@@ -1,6 +1,4 @@
 <?php
-function conectarDB() {
-  $host = "localhost"; 
 
 function conectarDB(){
 
@@ -36,10 +34,7 @@ function get($table){
   $conn->close();
 }
 
-function delete($table, $id){
-  $conn = conectarDB();
-
-function post($table, $data) {
+function post($table, $data){
   $conn = conectarDB();
 
   $columns = "";
@@ -50,7 +45,7 @@ function post($table, $data) {
 
     $columns = "(nombre, email, telefono)";
     $values = [$data['name'], $data['email'], $data['number']];
-    $types = "sss"; 
+    $types = "sss";
 
   } else if ($table === "eventos") {
 
@@ -66,18 +61,93 @@ function post($table, $data) {
       htmlspecialchars(trim($data['ubicacion'])),
       $data['idOrganizador']
     ];
-    $types = "ssssss"; 
-    
-  } 
+    $types = "ssssss";
+
+  }
 
   $placeholders = implode(", ", array_fill(0, count($values), "?"));
   $stmt = $conn->prepare("INSERT INTO $table $columns VALUES ($placeholders)");
   $stmt->bind_param($types, ...$values);
 
   if ($stmt->execute()) {
-    http_response_code(201); 
+    http_response_code(200);
   } else {
-    http_response_code(500); 
+    http_response_code(500);
+  }
+}
+
+function getById($table, $id) {
+  $conn = conectarDB();
+
+  $stmt = $conn->prepare("SELECT * FROM $table WHERE id = ?");
+  $stmt->bind_param("i", $id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    header("Content-Type: application/json");
+    echo json_encode($row);
+  } else {
+    http_response_code(404);
+  }
+
+  $stmt->close();
+  $conn->close();
+}
+
+function update($table, $id, $data){
+  $conn = conectarDB();
+
+  $set = [];
+  $values = [];
+  $types = "";
+
+
+  if ($table === "eventos") {
+    $set = "nombre_evento = ?";
+    $set = "tipo_deporte = ?";
+    $set = "fecha = ?";
+    $set = "hora = ?";
+    $set = "ubicacion = ?";
+    $set = "id_organizador = ?";
+    $values = [
+      htmlspecialchars(trim($data['nombre_evento'])),
+      htmlspecialchars(trim($data['deporte'])),
+      htmlspecialchars($data['fecha']),
+      htmlspecialchars($data['hora']),
+      htmlspecialchars(trim($data['ubicacion'])),
+      $data['idOrganizador']
+    ];
+
+    $types = "ssssss";
+  }
+
+  $setString = implode(", ", $set);
+  $stmt = $conn->prepare("UPDATE $table SET $setString WHERE id = ?");
+  $values[] = $id;
+  $types .= "i";
+
+  $stmt->bind_param($types, ...$values);
+
+  if ($stmt->execute()) {
+    http_response_code(200);
+
+  } else {
+    http_response_code(500);
+
+  }
+
+  $stmt->close();
+  $conn->close();
+
+}
+
+
+function delete($table, $id){
+  $conn = conectarDB();
+
+
   if ($table === "organizadores") {
     $stmt = $conn->prepare("SELECT COUNT(*) FROM eventos WHERE id_organizador = ?");
     $stmt->bind_param("i", $id);
@@ -111,12 +181,17 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["table"])) {
 
   get($_GET["table"]);
 
-}else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET["table"])) {
+} else if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_GET["table"])) {
+
+  $data = json_decode(file_get_contents("php://input"), true);
+
+  post($_GET["table"], $data);
+
+} else if ($_SERVER["REQUEST_METHOD"] === "PUT" && isset($_GET["table"]) && isset($_GET["id"])){
 
   $data = json_decode(file_get_contents("php://input"), true);
   
-  post($_GET['table'], $data);
-}
+  update($_GET["table"], $_GET["id"], $data);
 
 } else if ($_SERVER["REQUEST_METHOD"] === "DELETE" && isset($_GET["table"]) && isset($_GET["id"])) {
 

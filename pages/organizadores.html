@@ -23,44 +23,47 @@
           <th></th>
         </thead>
         <tbody>
-          
+
         </tbody>
       </table>
     </div>
 
-        <form>
-            <div>
-                <input type="text" id="name" name="name" placeholder="Nombre" required>
-                <input type="email" id="email" name="email" placeholder="Correo" required>
-                <input type="text" id="number" name="number" placeholder="Telefono" required>
-            </div>
-            
-            <div>
-              <ul id="errorList"></ul>
-            </div>
-            
-            <button id="btnForm" type="submit">Crear</button>
-        </form>
-    </main>
-    <script>
+    <form>
+      <div>
+        <ul id="errorList"></ul>
+      </div>
+      <div>
+        <input type="text" id="name" name="name" placeholder="Nombre" required>
+        <input type="email" id="email" name="email" placeholder="Correo" required>
+        <input type="text" id="number" name="number" placeholder="Telefono" required>
+      </div>
 
-      async function getManagers() {
-        try {
-          const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores")
-          
-          if (!response.ok) {
-            throw new Error("Error en la solicitud")
-          }
-          const managers = await response.json()
 
-          
-          if (managers.length !== 0) {
-            const tbody = document.querySelector("tbody")
 
-            managers.forEach(manager => {
-              const tr = document.createElement('tr')
+      <button id="btnForm" type="submit">Crear</button>
+    </form>
+  </main>
+  <script>
 
-						  tr.innerHTML = `
+    async function getManagers() {
+      try {
+        const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores")
+
+        if (!response.ok) {
+          throw new Error("Error en la solicitud")
+        }
+        const managers = await response.json()
+
+
+        if (managers.length !== 0) {
+          const tbody = document.querySelector("tbody")
+          tbody.innerText = ""
+
+
+          managers.forEach(manager => {
+            const tr = document.createElement('tr')
+
+            tr.innerHTML = `
                 <td>${manager.id}</td>
                 <td>${manager.nombre}</td>
                 <td>${manager.email}</td>
@@ -69,164 +72,127 @@
                   <button onclick="deleteManager(${manager.id})">Eliminar</button>
                 </td>
               `
-              tbody.appendChild(tr)
-            })
-
-          }else{
-					  alert("No se ha encontrado ningun organizador registrado")
-				  }
-            
-        } catch (error) {
-          console.error("Hubo un problema con la solicitud:", error)
-        }
-      }
-
-      getManagers()
-
-
-
-      async function postManager() {
-        
-        const inputName = document.getElementById("name").value
-        const inputEmail = document.getElementById("email").value
-        const inputNumber = document.getElementById("number").value
-        const ulErrors = document.getElementById("errorList")
-        const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        
-     
-        
-        ulErrors.innerText = ""
-        let errorList = []
-
-        if (inputName.length < 2) {
-          errorList.push("El nombre debe contener minimo dos caracteres")
-        }
-
-        if (regexCorreo.test(email)) {
-          errorList.push("Por favor, ingrese un correo electronico valido")
-        }
-
-        if ( inputNumber.length !== 9) {
-          console.log()
-          
-          errorList.push("El numero tiene que tener 9 digitos")
-        }
-
-
-        if (errorList.length > 0) {
-
-          errorList.forEach(error => {
-            const li = document.createElement("li")
-            li.textContent = error
-            ulErrors.appendChild(li)
+            tbody.appendChild(tr)
           })
 
-        } else{
-        
-          try{
-            const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores", {
-              method: "POST", 
-              headers: {
-                "Content-Type": "application/json"
-              },
-              
-              body: JSON.stringify({
-                name: inputName,
-                email: inputEmail,
-                number: inputNumber
-              })
-            })
+        } else {
+          alert("No se ha encontrado ningun organizador registrado")
+        }
 
-            console.log(response.status)
-           
+      } catch (error) {
+        console.error("Hubo un problema con la solicitud:", error)
+      }
+    }
 
-            if (response.status === 201) {
-              alert ("Se ha enviado correctamente")
+    getManagers()
 
-              getManagers()
-            }else if (response.status === 500) {
-              alert ("Error de servidor")
-            }
-            
 
-          }catch(error){
-            console.error(error)
-          }
-        } 
+
+    async function postManager() {
+
+      const inputName = document.getElementById("name").value
+      const inputEmail = document.getElementById("email").value
+      const inputNumber = document.getElementById("number").value
+      const ulErrors = document.getElementById("errorList")
+      const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+
+
+      ulErrors.innerText = ""
+      let errorList = []
+
+      if (inputName.length < 2) {
+        errorList.push("El nombre debe contener minimo dos caracteres")
       }
 
-      document.querySelector("form").addEventListener("submit", async (event) => {
-      event.preventDefault() 
-      await postManager() 
+      if (regexCorreo.test(email)) {
+        errorList.push("Por favor, ingrese un correo electronico valido")
+      }
+
+      if (inputNumber.length !== 9) {
+        console.log()
+
+        errorList.push("El numero tiene que tener 9 digitos")
+      }
+
+
+      if (errorList.length > 0) {
+
+        errorList.forEach(error => {
+          const li = document.createElement("li")
+          li.textContent = error
+          ulErrors.appendChild(li)
+        })
+
+      } else {
+
+        try {
+          const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              name: inputName,
+              email: inputEmail,
+              number: inputNumber
+            })
+          })
+
+          console.log(response.status)
+
+
+          if (response.status === 201) {
+            alert("Se ha enviado correctamente")
+
+            getManagers()
+          } else if (response.status === 500) {
+            alert("Error de servidor")
+          }
+
+
+        } catch (error) {
+          console.error(error)
+        }
+      }
+    }
+
+
+    async function deleteManager(id) {
+      if (confirm("¿Estás seguro que deseas eliminar este organizador?")) {
+        try {
+          const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores&id=" + id, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json"
+            }
+          })
+
+          if (response.ok) {
+            alert("Organizador eliminado con éxito")
+            getManagers()
+
+          } else {
+            alert("Error al eliminar el organizador")
+            if (response.status === 403) {
+              alert("No se puede eliminar el organizador porque tiene eventos asociados")
+            }
+          }
+
+        } catch (error) {
+          console.error("Error en la solicitud: " + error)
+        }
+      }
+    }
+    document.querySelector("form").addEventListener("submit", async (event) => {
+      event.preventDefault()
+      await postManager()
     })
-      
-    </script>
-	<header>
-		<h1>Organizadores</h1>
-	</header>
 
-	<main>
-		<div>
-
-			<table>
-				<thead>
-					<th>Id</th>
-					<th>Nombre</th>
-					<th>Email</th>
-					<th>Telefono</th>
-					<th></th>
-				</thead>
-
-				<tbody>
-
-				</tbody>
-			</table>
-		</div>
+  </script>
 
 
-		<form>
-			<div>
-				<input type="text" id="name" name="name" placeholder="Nombre" required>
-				<input type="email" id="email" name="email" placeholder="Correo" required>
-				<input type="text" id="number" name="number" placeholder="Telefono" required>
-			</div>
-
-
-			<div>
-				errores
-			</div>
-
-			<button type="submit">Crear</button>
-		</form>
-	</main>
-	<script>
-		async function deleteManager(id) {
-			if (confirm("¿Estás seguro que deseas eliminar este organizador?")) {
-				try {
-					const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores&id=" + id, {
-						method: "DELETE",
-						headers: {
-							"Content-Type": "application/json"
-						}
-					})
-
-					if (response.ok) {
-						alert("Organizador eliminado con éxito")
-						fetchEventos()
-
-					} else {
-						alert("Error al eliminar el organizador")
-						if (response.status === 403) {
-							alert("No se puede eliminar el organizador porque tiene eventos asociados")
-						}
-					}
-
-				} catch (error) {
-					console.error("Error en la solicitud: " + error)
-				}
-			}
-		}
-	</script>
 </body>
 
 </html>
