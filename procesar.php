@@ -69,7 +69,6 @@ function post($table, $data){
       $data['idOrganizador']
     ];
     $types = "ssssss";
-
   }
 
   $placeholders = implode(", ", array_fill(0, count($values), "?"));
@@ -146,7 +145,7 @@ function delete($table, $id){
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
 
-    if ($row["count"] > 0) {
+    if ($row["COUNT(*)"] > 0) {
       http_response_code(403);
       $stmt->close();
       $conn->close();

@@ -73,7 +73,7 @@
 
 					events.forEach(event => {
 						
-						const tr = document.createElement('tr')
+						const tr = document.createElement("tr")
 						tr.innerHTML = `
 							<td>${event.id}</td>
 							<td>${event.nombre_evento}</td>
@@ -113,7 +113,7 @@
 					const select = document.querySelector("select")
 
 					managers.forEach(manager => {
-						const option = document.createElement('option')
+						const option = document.createElement("option")
 						option.innerHTML = manager.nombre
 						option.value = manager.id
 						select.appendChild(option)
@@ -199,14 +199,14 @@
 
 		async function editMode(id) {
 
-			const inputNameEvent = document.getElementById("nombre_evento");
-			const inputSport = document.getElementById("deporte");
-			const inputTime = document.getElementById("fecha");
-			const inputLocation = document.getElementById("ubicacion");
-			const selectOrganizador = document.getElementById("idOrganizador");
+			const inputNameEvent = document.getElementById("nombre_evento")
+			const inputSport = document.getElementById("deporte")
+			const inputTime = document.getElementById("fecha")
+			const inputLocation = document.getElementById("ubicacion")
+			const selectOrganizador = document.getElementById("idOrganizador")
 			
-			const spanAction = document.getElementById("action");
-			const spanId = document.getElementById("id_evento");
+			const spanAction = document.getElementById("action")
+			const spanId = document.getElementById("id_evento")
 			const submitBtn = document.querySelector("button[type='submit']")
 
 			submitBtn.innerText = "Editar"
@@ -242,8 +242,8 @@
 			const inputLocation = document.getElementById("ubicacion")
 			const selectOrganizador = document.getElementById("idOrganizador")
 
-			const spanAction = document.getElementById("action");
-			const spanId = document.getElementById("id_evento");
+			const spanAction = document.getElementById("action")
+			const spanId = document.getElementById("id_evento")
 			const submitBtn = document.querySelector("button[type='submit']")
 
 
@@ -264,24 +264,24 @@
 				})
 
 				if (response.ok) {
-					alert("Evento editado correctamente");
-					getEvents();
+					alert("Evento editado correctamente")
+					getEvents()
 				} else {
-					alert("Error al editar el evento");
+					alert("Error al editar el evento")
 				}
 
 				submitBtn.innerText = "Crear"
 				spanAction.innerText = "Crear"
 				spanId.innerText = ""
 
-				inputNameEvent.value = "";
-				inputSport.value = "";
-				inputTime.value = "";
-				inputLocation.value = "";
-				selectOrganizador.value = "";
+				inputNameEvent.value = ""
+				inputSport.value = ""
+				inputTime.value = ""
+				inputLocation.value = ""
+				selectOrganizador.value = ""
 				
 			} catch (error) {
-					console.error("Error en la solicitud:", error);
+					console.error("Error en la solicitud:", error)
 			}
 		}
 
@@ -312,11 +312,11 @@
 	
 		document.querySelector("form").addEventListener("submit", async (event) => {
 			event.preventDefault()
-			const spanAction = document.getElementById("action");
-			const spanId = document.getElementById("id_evento");
+			const spanAction = document.getElementById("action")
+			const spanId = document.getElementById("id_evento")
 
 			if (spanAction.innerText === "Editar") {
-				const id = spanId.innerText;
+				const id = spanId.innerText
 				await editEvent(id)
 				
 			} else {

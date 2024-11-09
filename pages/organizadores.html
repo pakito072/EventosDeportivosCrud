@@ -62,7 +62,7 @@
           tbody.innerText = ""
 
           managers.forEach(manager => {
-            const tr = document.createElement('tr')
+            const tr = document.createElement("tr")
 
             tr.innerHTML = `
                 <td>${manager.id}</td>
@@ -88,40 +88,40 @@
     getManagers()
 
     async function postManager() {
-      const inputName = document.getElementById("name");
-      const inputEmail = document.getElementById("email");
-      const inputNumber = document.getElementById("number");
-      const ulErrors = document.getElementById("errorList");
+      const inputName = document.getElementById("name")
+      const inputEmail = document.getElementById("email")
+      const inputNumber = document.getElementById("number")
+      const ulErrors = document.getElementById("errorList")
 
-      const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      const regexNumber = /^[0-9]{9}$/;
+      const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+      const regexNumber = /^[0-9]{9}$/
 
-      ulErrors.innerText = "";
-      let errorList = [];
+      ulErrors.innerText = ""
+      let errorList = []
 
       if (inputName.value.length < 2) {
-        errorList.push("El nombre debe contener mínimo dos caracteres");
+        errorList.push("El nombre debe contener mínimo dos caracteres")
       }
 
       if (!regexEmail.test(inputEmail.value)) {
-        errorList.push("Por favor, ingrese un correo electrónico válido");
+        errorList.push("Por favor, ingrese un correo electrónico válido")
       }
 
-      const numberValue = inputNumber.value.trim();
-      
+      const numberValue = inputNumber.value.trim()
+
       if (numberValue.length !== 9 || !regexNumber.test(numberValue)) {
-        errorList.push("El número debe tener 9 dígitos numéricos");
+        errorList.push("El número debe tener 9 dígitos numéricos")
       }
 
       if (errorList.length > 0) {
-        ulErrors.style.display = "block";
+        ulErrors.style.display = "block"
         errorList.forEach(error => {
-          const li = document.createElement("li");
-          li.textContent = error;
-          ulErrors.appendChild(li);
-        });
+          const li = document.createElement("li")
+          li.textContent = error
+          ulErrors.appendChild(li)
+        })
       } else {
-        ulErrors.style.display = "none";
+        ulErrors.style.display = "none"
 
         try {
           const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores", {
@@ -134,26 +134,26 @@
               email: inputEmail.value,
               number: numberValue
             })
-          });
+          })
 
           if (response.status === 201) {
-            alert("Se ha enviado correctamente");
-            getManagers(); // Llamar la función que actualiza los organizadores
+            alert("Se ha enviado correctamente")
+            getManagers() // Llamar la función que actualiza los organizadores
           } else if (response.status === 500) {
-            alert("Status 500: Error de servidor");
+            alert("Status 500: Error de servidor")
           } else {
-            alert("Error desconocido al enviar los datos");
+            alert("Error desconocido al enviar los datos")
           }
 
-          inputName.value = "";
-          inputEmail.value = "";
-          inputNumber.value = "";
+          inputName.value = ""
+          inputEmail.value = ""
+          inputNumber.value = ""
 
         } catch (error) {
-          console.error("Error en la solicitud:", error);
+          console.error("Error en la solicitud:", error)
         }
-  }
-}
+      }
+    }
 
 
 
