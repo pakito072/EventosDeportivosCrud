@@ -29,9 +29,10 @@
     </div>
 
     <form>
-      <div>
-        <ul id="errorList"></ul>
-      </div>
+      
+      <ul id="errorList"></ul>
+      
+
       <div>
         <h2>Crear organizador</h2>
         <input type="text" id="name" name="name" placeholder="Nombre" required>
@@ -60,7 +61,6 @@
           const tbody = document.querySelector("tbody")
           tbody.innerText = ""
 
-
           managers.forEach(manager => {
             const tr = document.createElement('tr')
 
@@ -87,45 +87,41 @@
 
     getManagers()
 
-
-
     async function postManager() {
+      const inputName = document.getElementById("name");
+      const inputEmail = document.getElementById("email");
+      const inputNumber = document.getElementById("number");
+      const ulErrors = document.getElementById("errorList");
 
-      const inputName = document.getElementById("name").value
-      const inputEmail = document.getElementById("email").value
-      const inputNumber = document.getElementById("number").value
-      const ulErrors = document.getElementById("errorList")
-      const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      const regexNumber = /^[0-9]{9}$/;
 
+      ulErrors.innerText = "";
+      let errorList = [];
 
-
-      ulErrors.innerText = ""
-      let errorList = []
-
-      if (inputName.length < 2) {
-        errorList.push("El nombre debe contener minimo dos caracteres")
+      if (inputName.value.length < 2) {
+        errorList.push("El nombre debe contener mínimo dos caracteres");
       }
 
-      if (regexCorreo.test(email)) {
-        errorList.push("Por favor, ingrese un correo electronico valido")
+      if (!regexEmail.test(inputEmail.value)) {
+        errorList.push("Por favor, ingrese un correo electrónico válido");
       }
 
-      if (inputNumber.length !== 9) {
-        console.log()
-
-        errorList.push("El numero tiene que tener 9 digitos")
+      const numberValue = inputNumber.value.trim();
+      
+      if (numberValue.length !== 9 || !regexNumber.test(numberValue)) {
+        errorList.push("El número debe tener 9 dígitos numéricos");
       }
-
 
       if (errorList.length > 0) {
-
+        ulErrors.style.display = "block";
         errorList.forEach(error => {
-          const li = document.createElement("li")
-          li.textContent = error
-          ulErrors.appendChild(li)
-        })
-
+          const li = document.createElement("li");
+          li.textContent = error;
+          ulErrors.appendChild(li);
+        });
       } else {
+        ulErrors.style.display = "none";
 
         try {
           const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores", {
@@ -133,31 +129,32 @@
             headers: {
               "Content-Type": "application/json"
             },
-
             body: JSON.stringify({
-              name: inputName,
-              email: inputEmail,
-              number: inputNumber
+              name: inputName.value,
+              email: inputEmail.value,
+              number: numberValue
             })
-          })
-
-          console.log(response.status)
-
+          });
 
           if (response.status === 201) {
-            alert("Se ha enviado correctamente")
-
-            getManagers()
+            alert("Se ha enviado correctamente");
+            getManagers(); // Llamar la función que actualiza los organizadores
           } else if (response.status === 500) {
-            alert("Error de servidor")
+            alert("Status 500: Error de servidor");
+          } else {
+            alert("Error desconocido al enviar los datos");
           }
 
+          inputName.value = "";
+          inputEmail.value = "";
+          inputNumber.value = "";
 
         } catch (error) {
-          console.error(error)
+          console.error("Error en la solicitud:", error);
         }
-      }
-    }
+  }
+}
+
 
 
     async function deleteManager(id) {
@@ -186,6 +183,7 @@
         }
       }
     }
+
     document.querySelector("form").addEventListener("submit", async (event) => {
       event.preventDefault()
       await postManager()

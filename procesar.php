@@ -15,7 +15,6 @@ function conectarDB(){
   return $connection;
 }
 
-
 function get($table){
   $conn = conectarDB();
 
@@ -56,15 +55,16 @@ function post($table, $data){
 
   } else if ($table === "eventos") {
 
-    $fechaHora = $data['fecha'];
-    list($fecha, $hora) = explode('T', $fechaHora);
+    $datetime = $data['fecha'];
+    list($date, $time) = explode('T', $datetime);
 
     $columns = "(nombre_evento, tipo_deporte, fecha, hora, ubicacion, id_organizador)";
+
     $values = [
       htmlspecialchars(trim($data['nombre_evento'])),
       htmlspecialchars(trim($data['deporte'])),
-      htmlspecialchars($fecha),
-      htmlspecialchars($hora),
+      htmlspecialchars($date),
+      htmlspecialchars($time),
       htmlspecialchars(trim($data['ubicacion'])),
       $data['idOrganizador']
     ];
@@ -77,7 +77,7 @@ function post($table, $data){
   $stmt->bind_param($types, ...$values);
 
   if ($stmt->execute()) {
-    http_response_code(200);
+    http_response_code(201);
   } else {
     http_response_code(500);
   }
@@ -110,36 +110,30 @@ function getById($id) {
 function update($id, $data){
   $conn = conectarDB();
 
-  $values = [];
-  $types = "";
+  $datetime = htmlspecialchars($data['fecha']);
+
+  list($date, $time) = explode('T', $datetime);
 
   $eventName = htmlspecialchars(trim($data['nombre_evento']));
   $sport = htmlspecialchars(trim($data['deporte']));
-  $date = htmlspecialchars($data['fecha']);
-  $time = htmlspecialchars($data['hora']);
   $location = htmlspecialchars(trim($data['ubicacion']));
-  $idOrganizador = $data['idOrganizador'];
-  
+  $idOrganizador = (int) $data['idOrganizador'];
+  $id = (int) $id;
   
   $stmt = $conn->prepare("UPDATE eventos SET nombre_evento = ?, tipo_deporte = ?, fecha = ?, hora = ?, ubicacion = ?, id_organizador = ? WHERE id = ?");
-  $values[] = $id;
-  $types .= "i";
-
-  $stmt->bind_param("ssssssi",$eventName, $sport, $date, $time, $location, $idOrganizador, $id);
+  $stmt->bind_param("ssssssi", $eventName, $sport, $date, $time, $location, $idOrganizador, $id);
 
   if ($stmt->execute()) {
     http_response_code(200);
 
   } else {
     http_response_code(500);
-
+    error_log("Error al actualizar evento: " . $stmt->error);
   }
 
   $stmt->close();
   $conn->close();
-
 }
-
 
 function delete($table, $id){
   $conn = conectarDB();
@@ -188,10 +182,10 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["table"])) {
 
   post($_GET["table"], $data);
 
-} else if ($_SERVER["REQUEST_METHOD"] === "PUT" && isset($_GET["table"]) && isset($_GET["id"])){
+} else if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_GET["id"])){
 
   $data = json_decode(file_get_contents("php://input"), true);
-  
+
   update($_GET["id"], $data);
 
 } else if ($_SERVER["REQUEST_METHOD"] === "DELETE" && isset($_GET["table"]) && isset($_GET["id"])) {

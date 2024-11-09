@@ -33,9 +33,9 @@
 		</div>
 
 		<form>
-			<div>
-				<ul id="errorList"></ul>
-			</div>
+			
+			<ul id="errorList"></ul>
+			
 
 			<div>
 				<h2><span id="action">Crear</span> Evento <span id="id_evento"></span></h2>
@@ -131,19 +131,15 @@
 
 		getOrganizadores()
 
-
-
 		async function postEvents() {
 
 			const inputNameEvent = document.getElementById("nombre_evento").value
 			const inputSport = document.getElementById("deporte").value
 			const inputTime = document.getElementById("fecha").value
-			const inputHour = document.getElementById("hora")
 			const selectOrganizador = document.getElementById("idOrganizador").value
 			const inputLocation = document.getElementById("ubicacion").value
-
+			
 			const ulErrors = document.getElementById("errorList")
-
 			ulErrors.innerText = ""
 			let errorList = []
 
@@ -168,29 +164,26 @@
 				})
 
 			} else {
-
+				
 				try {
 					const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=eventos", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json"
 						},
-
 						body: JSON.stringify({
 							nombre_evento: inputNameEvent,
 							deporte: inputSport,
 							fecha: inputTime,
-							hora: inputHour,
 							idOrganizador: selectOrganizador,
 							ubicacion: inputLocation
-
 						})
 					})
 
 					if (response.status === 201) {
+						alert("Se ha enviado correctamente")
 
 						getEvents()
-						alert("Se ha enviado correctamente")
 
 					} else if (response.status === 500) {
 
@@ -204,22 +197,6 @@
 			}
 		}
 
-		document.querySelector("form").addEventListener("submit", async (event) => {
-			event.preventDefault()
-			const spanAction = document.getElementById("action");
-			const spanId = document.getElementById("id_evento");
-			if (spanAction.innerText === "Editar") {
-				const id = spanId.innerText;
-				await editEvent(id)
-				
-			} else {
-				await postEvents()
-
-			}
-
-		})
-
-
 		async function editMode(id) {
 
 			const inputNameEvent = document.getElementById("nombre_evento");
@@ -230,6 +207,9 @@
 			
 			const spanAction = document.getElementById("action");
 			const spanId = document.getElementById("id_evento");
+			const submitBtn = document.querySelector("button[type='submit']")
+
+			submitBtn.innerText = "Editar"
 			spanAction.innerText = "Editar"
 			spanId.innerText = id
 
@@ -248,8 +228,6 @@
 				inputLocation.value = eventEdit.ubicacion
 				selectOrganizador.value = eventEdit.id_organizador
 				
-				const submitBtn = document.querySelector("button[type='submit']")
-				submitBtn.innerText = "Editar"
 
 			} catch (error) {
 				console.error(error)
@@ -258,40 +236,54 @@
 		}
 
 		async function editEvent(id) {
-		const inputNameEvent = document.getElementById("nombre_evento").value
-    const inputSport = document.getElementById("deporte").value
-    const inputTime = document.getElementById("fecha").value
-		const inputHour = document.getElementById("hora")
-		const inputLocation = document.getElementById("ubicacion").value
-    const selectOrganizador = document.getElementById("idOrganizador").value
+			const inputNameEvent = document.getElementById("nombre_evento")
+			const inputSport = document.getElementById("deporte")
+			const inputTime = document.getElementById("fecha")
+			const inputLocation = document.getElementById("ubicacion")
+			const selectOrganizador = document.getElementById("idOrganizador")
 
-    try {
-        const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?id=" + id, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                nombre_evento: inputNameEvent,
-                deporte: inputSport,
-                fecha: inputTime,
-								hora: inputHour,
-                idOrganizador: selectOrganizador,
-                ubicacion: inputLocation
-            })
-        });
+			const spanAction = document.getElementById("action");
+			const spanId = document.getElementById("id_evento");
+			const submitBtn = document.querySelector("button[type='submit']")
 
-        if (response.ok) {
-            alert("Evento editado correctamente");
-            getEvents();
-        } else {
-            alert("Error al editar el evento");
-        }
-    } catch (error) {
-        console.error("Error en la solicitud:", error);
-    }
-}
 
+			try {
+				const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?id=" + id, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify({
+							action: "update",
+							nombre_evento: inputNameEvent.value,
+							deporte: inputSport.value,
+							fecha: inputTime.value,
+							ubicacion: inputLocation.value,
+							idOrganizador: selectOrganizador.value
+						})
+				})
+
+				if (response.ok) {
+					alert("Evento editado correctamente");
+					getEvents();
+				} else {
+					alert("Error al editar el evento");
+				}
+
+				submitBtn.innerText = "Crear"
+				spanAction.innerText = "Crear"
+				spanId.innerText = ""
+
+				inputNameEvent.value = "";
+				inputSport.value = "";
+				inputTime.value = "";
+				inputLocation.value = "";
+				selectOrganizador.value = "";
+				
+			} catch (error) {
+					console.error("Error en la solicitud:", error);
+			}
+		}
 
 		async function deleteEvent(id) {
 			if (confirm("¿Estás seguro que deseas eliminar este evento?")) {
@@ -317,6 +309,20 @@
 				}
 			}
 		}
+	
+		document.querySelector("form").addEventListener("submit", async (event) => {
+			event.preventDefault()
+			const spanAction = document.getElementById("action");
+			const spanId = document.getElementById("id_evento");
+
+			if (spanAction.innerText === "Editar") {
+				const id = spanId.innerText;
+				await editEvent(id)
+				
+			} else {
+				await postEvents()
+			}
+		})
 	</script>
 </body>
 

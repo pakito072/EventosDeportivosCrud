@@ -63,8 +63,6 @@ th, td {
     text-align: center;
 }
 
-
-
 td > button:first-child{
     background-color: #007CFF;
     border-color: #007CFF;
@@ -81,6 +79,7 @@ td > button:last-child{
     border-radius: 5px;
 }
 
+
 form > div{
     width: 80%;
     display: flex;
@@ -95,5 +94,6 @@ input{
 }
 
 ul{
+    display: none;
     color: #e9505d;
 }
