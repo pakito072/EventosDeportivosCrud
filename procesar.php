@@ -49,8 +49,40 @@ function post($table, $data){
 
   if ($table === "organizadores") {
 
+    $regexEmail = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
+    $regexNumber = '/^[0-9]{9}$/';
+
+    $inputName = isset($_POST['name']) ? trim($_POST['name']) : '';
+    $inputEmail = isset($_POST['email']) ? trim($_POST['email']) : '';
+    $inputNumber = isset($_POST['number']) ? trim($_POST['number']) : '';
+
+    if (strlen($inputName) < 2) {
+      http_response_code(401);
+      $conn->close();   
+      return;
+    }
+
+    if (!preg_match($regexEmail, $inputEmail)) {
+      http_response_code(401);
+      $conn->close();
+      return;
+    }
+
+    if (strlen($inputNumber) !== 9 || !preg_match($regexNumber, $inputNumber)) {
+      http_response_code(401);
+      $conn->close();   
+      return; 
+    }
+
+
+
+
     $columns = "(nombre, email, telefono)";
-    $values = [$data['name'], $data['email'], $data['number']];
+    $values = [
+      htmlspecialchars(trim($data['name'])),
+      htmlspecialchars(trim($data['email'])),
+      htmlspecialchars(trim($data['number'])),
+    ];
     $types = "sss";
 
   } else if ($table === "eventos") {
