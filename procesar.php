@@ -209,6 +209,8 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["table"])) {
   
 } else if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_GET["table"])) {
 
+  // Lee el contenido del cuerpo de la solicitud HTTP
+  // Decodifica la cadena JSON obtenida y la convierte en un array asociativo de PHP
   $data = json_decode(file_get_contents("php://input"), true);
 
   post($_GET["table"], $data);
