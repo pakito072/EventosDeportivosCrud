@@ -199,29 +199,4 @@ function delete($table, $id){
 
 }
 
-if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["table"])) {
 
-  get($_GET["table"]);
-
-} else if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["id"])) {
-
-  getById($_GET["id"]);
-  
-} else if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_GET["table"])) {
-
-  // Lee el contenido del cuerpo de la solicitud HTTP
-  // Decodifica la cadena JSON obtenida y la convierte en un array asociativo de PHP
-  $data = json_decode(file_get_contents("php://input"), true);
-
-  post($_GET["table"], $data);
-
-} else if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_GET["id"])){
-
-  $data = json_decode(file_get_contents("php://input"), true);
-
-  update($_GET["id"], $data);
-
-} else if ($_SERVER["REQUEST_METHOD"] === "DELETE" && isset($_GET["table"]) && isset($_GET["id"])) {
-
-  delete($_GET["table"], $_GET["id"]);
-}

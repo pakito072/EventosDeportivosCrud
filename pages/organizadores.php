@@ -1,3 +1,12 @@
+<?php
+include "procesar.php";
+
+
+
+echo"";
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -35,9 +44,9 @@
 
       <div>
         <h2>Crear organizador</h2>
-        <input type="text" id="name" name="name" placeholder="Nombre" required>
-        <input type="email" id="email" name="email" placeholder="Correo" required>
-        <input type="text" id="number" name="number" placeholder="Telefono" required>
+        <input type="text" id="name" name="name" placeholder="Nombre">
+        <input type="email" id="email" name="email" placeholder="Correo">
+        <input type="text" id="number" name="number" placeholder="Telefono">
       </div>
 
 
@@ -93,33 +102,14 @@
       const inputNumber = document.getElementById("number")
       const ulErrors = document.getElementById("errorList")
 
-      const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-      const regexNumber = /^[0-9]{9}$/
+      
 
       ulErrors.innerText = ""
-      let errorList = []
 
-      if (inputName.value.length < 2) {
-        errorList.push("El nombre debe contener mínimo dos caracteres")
-      }
-
-      if (!regexEmail.test(inputEmail.value)) {
-        errorList.push("Por favor, ingrese un correo electrónico válido")
-      }
-
-      const numberValue = inputNumber.value.trim()
-
-      if (numberValue.length !== 9 || !regexNumber.test(numberValue)) {
-        errorList.push("El número debe tener 9 dígitos numéricos")
-      }
+      
 
       if (errorList.length > 0) {
-        ulErrors.style.display = "block"
-        errorList.forEach(error => {
-          const li = document.createElement("li")
-          li.textContent = error
-          ulErrors.appendChild(li)
-        })
+        
       } else {
         ulErrors.style.display = "none"
 
@@ -139,8 +129,14 @@
           if (response.status === 201) {
             alert("Se ha enviado correctamente")
             getManagers() 
-          } else if (response.status === 500) {
-            alert("Status 500: Error de servidor")
+          } else if (response.status === 500  ) {
+            ulErrors.style.display = "block"
+            errorList.forEach(error => {
+              const li = document.createElement("li")
+              li.textContent = error
+              ulErrors.appendChild(li)
+            })
+
           } else {
             alert("Error desconocido al enviar los datos")
           }
