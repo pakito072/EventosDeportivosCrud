@@ -1,3 +1,24 @@
+<?php
+  include "../procesar.php";
+
+  $errors = isset($_SESSION['errors']) ? $_SESSION['errors']: null ;
+  unset($_SESSION['errors']);
+
+	$isEdit = isset($_GET['id']);
+	$eventData = null;
+
+	if ($isEdit) {
+		$eventId = $_GET['id'];
+		$events = get("eventos");
+		foreach ($events as $event) {
+			if ($event['id'] == $eventId) {
+				$eventData = $event;
+				break;
+			}
+		}
+	}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,303 +48,83 @@
 				</thead>
 
 				<tbody>
+					<?php 
+						$events = get("eventos");
+						if (empty($events)) {
+							echo "<tr><td colspan='5'>No se ha encontrado ningún evento</td></tr>";
+						} else {
+							foreach ($events as $event):
+					?>
+							<tr>
+								<td><?php echo $event['id']; ?></td>
+								<td><?php echo $event['nombre_evento']; ?></td>
+								<td><?php echo $event['tipo_deporte']; ?></td>
+								<td><?php echo $event['fecha']; ?></td>
+								<td><?php echo $event['hora']; ?></td>
+								<td><?php echo $event['ubicacion']; ?></td>
+								<td><?php echo $event['nombre_organizador']; ?></td>
+								<td>
+									<a href='eventos.php?id=<?php echo $event['id']; ?>'>Editar</a>
+
+									<form action='../procesar.php' method='POST'>
+										<input type='hidden' name='accion' value='DELTeventos'>
+										<input type='hidden' name='id' value='<?php echo $event['id']; ?>'>
+										<button type='submit' onclick='return confirm("¿Estás seguro de que deseas eliminar este evento?")'>Eliminar</button>
+									</form>
+								</td>
+							</tr>
+					<?php 
+							endforeach; 
+						}
+					?>
 
 				</tbody>
 			</table>
 		</div>
 
-		<form>
+		<form action="../procesar.php" method="post">
 			
-			<ul id="errorList"></ul>
-			
+			<?php if ($errors == true): ?>
+        <ul id="errorList">
+          <?php 
+            foreach ($errors as $error) {
+              echo "<li>$error</li>";
+            }
+          ?>
+        </ul>
+      <?php endif; ?>
 
 			<div>
-				<h2><span id="action">Crear</span> Evento <span id="id_evento"></span></h2>
-				<input type="text" name="nombre_evento" id="nombre_evento" placeholder="Nombre del Evento" required>
-				<input type="text" name="deporte" id="deporte" placeholder="Deporte" required>
+				<h2><span id="action"><?php echo $isEdit ? "Editar" : "Crear"; ?></span> Evento</h2>
+
+				<input type="hidden" name="accion" value="<?php echo $isEdit ? 'UPDAeventos' : 'POSTeventos'; ?>">
+
+				<?php echo $isEdit ? '<input type="hidden" name="id" value="' . $eventData['id'] . '">' : ''; ?>
+
+				<input type="text" name="nombre_evento" id="nombre_evento" placeholder="Nombre del Evento" value="<?php echo $isEdit ? $eventData['nombre_evento'] : ''; ?>">
+				<input type="text" name="deporte" id="deporte" placeholder="Deporte" value="<?php echo $isEdit ? $eventData['tipo_deporte'] : ''; ?>">
+				
 				<div>
-					<input type="datetime-local" name="fecha" id="fecha" required>
+					<input type="datetime-local" name="fecha" id="fecha" value="<?php echo $isEdit ? $eventData['fecha'] . 'T' . $eventData['hora'] : ''; ?>">
 
 					<select name="idOrganizador" id="idOrganizador">
 						<option selected disabled>Selecciona un Organizador</option>
+						<?php
+							$managers = get("organizadores");
+							foreach ($managers as $manager) {
+								$selected = ($isEdit && $eventData['id_organizador'] == $manager['id']) ? 'selected' : '';
+								echo "<option value='{$manager['id']}' $selected>{$manager['nombre']}</option>";
+							}
+						?>
 					</select>
-
 				</div>
-				<input type="text" name="ubicacion" id="ubicacion" placeholder="Ubicacion" required>
 
-			</div>
+				<input type="text" name="ubicacion" id="ubicacion" placeholder="Ubicacion" value="<?php echo $isEdit ? $eventData['ubicacion'] : ''; ?>">
+		</div>
 
-			<button type="submit">Crear</button>
+			<button type="submit"><?php echo $isEdit ? "Actualizar" : "Crear"; ?></button>
 		</form>
 	</main>
-	<script>
-		async function getEvents() {
-			try {
-				const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=eventos")
-
-				
-				if (!response.ok) {
-					throw new Error("Error en la solicitud")
-				}
-
-				const events = await response.json()
-				if (events.length !== 0) {
-					const tbody = document.querySelector("tbody")
-					tbody.innerText = ""
-
-					events.forEach(event => {
-						
-						const tr = document.createElement("tr")
-						tr.innerHTML = `
-							<td>${event.id}</td>
-							<td>${event.nombre_evento}</td>
-							<td>${event.tipo_deporte}</td>
-							<td>${event.fecha}</td>
-							<td>${event.hora}</td>
-							<td>${event.ubicacion}</td>
-							<td>${event.nombre_organizador}</td>
-							<td>
-								<button onclick="editMode(${event.id})">Editar</button>
-								<button onclick="deleteEvent(${event.id})">Eliminar</button>
-							</td>
-						`
-						tbody.appendChild(tr)
-					})
-				} else {
-					alert("No se ha encontrado ningun evento registrado")
-				}
-
-			} catch (error) {
-				console.error("Hubo un problema con la solicitud:", error)
-			}
-		}
-
-		getEvents()
-
-		async function getOrganizadores() {
-			try {
-				const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=organizadores")
-
-				if (!response.ok) {
-					throw new Error("Error en la solicitud")
-				}
-				const managers = await response.json()
-
-				if (managers.length !== 0) {
-					const select = document.querySelector("select")
-
-					managers.forEach(manager => {
-						const option = document.createElement("option")
-						option.innerHTML = manager.nombre
-						option.value = manager.id
-						select.appendChild(option)
-					})
-
-				} else {
-					alert("No se ha encontrado ningun evento registrado")
-				}
-
-			} catch (error) {
-				console.error("Hubo un problema con la solicitud:", error)
-			}
-
-		}
-
-		getOrganizadores()
-
-		async function postEvents() {
-
-			const inputNameEvent = document.getElementById("nombre_evento").value
-			const inputSport = document.getElementById("deporte").value
-			const inputTime = document.getElementById("fecha").value
-			const selectOrganizador = document.getElementById("idOrganizador").value
-			const inputLocation = document.getElementById("ubicacion").value
-			
-			const ulErrors = document.getElementById("errorList")
-			ulErrors.innerText = ""
-			let errorList = []
-
-			if (inputNameEvent.length < 2) {
-				errorList.push("El nombre debe contener minimo dos caracteres")
-			}
-
-			if (inputSport.length < 2) {
-				errorList.push("El deporte debe contener minimo dos caracteres")
-			}
-
-			if (inputLocation.length < 2) {
-				errorList.push("La ubicacion debe contener minimo dos caracteres")
-			}
-
-			if (errorList.length > 0) {
-
-				errorList.forEach(error => {
-					const li = document.createElement("li")
-					li.textContent = error
-					ulErrors.appendChild(li)
-				})
-
-			} else {
-				
-				try {
-					const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=eventos", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify({
-							nombre_evento: inputNameEvent,
-							deporte: inputSport,
-							fecha: inputTime,
-							idOrganizador: selectOrganizador,
-							ubicacion: inputLocation
-						})
-					})
-
-					if (response.status === 201) {
-						alert("Se ha enviado correctamente")
-
-						getEvents()
-
-					} else if (response.status === 500) {
-
-						alert("Error de servidor")
-
-					}
-
-				} catch (error) {
-					console.error(error)
-				}
-			}
-		}
-
-		async function editMode(id) {
-
-			const inputNameEvent = document.getElementById("nombre_evento")
-			const inputSport = document.getElementById("deporte")
-			const inputTime = document.getElementById("fecha")
-			const inputLocation = document.getElementById("ubicacion")
-			const selectOrganizador = document.getElementById("idOrganizador")
-			
-			const spanAction = document.getElementById("action")
-			const spanId = document.getElementById("id_evento")
-			const submitBtn = document.querySelector("button[type='submit']")
-
-			submitBtn.innerText = "Editar"
-			spanAction.innerText = "Editar"
-			spanId.innerText = id
-
-			try {
-				const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?id=" + id)
-
-				if (!response.ok) {
-					throw new Error("Error en la solicitud")
-				}
-
-				const eventEdit = await response.json()
-
-				inputNameEvent.value = eventEdit.nombre_evento
-				inputSport.value = eventEdit.tipo_deporte
-				inputTime.value = eventEdit.fecha + "T" +eventEdit.hora
-				inputLocation.value = eventEdit.ubicacion
-				selectOrganizador.value = eventEdit.id_organizador
-				
-
-			} catch (error) {
-				console.error(error)
-
-			}
-		}
-
-		async function editEvent(id) {
-			const inputNameEvent = document.getElementById("nombre_evento")
-			const inputSport = document.getElementById("deporte")
-			const inputTime = document.getElementById("fecha")
-			const inputLocation = document.getElementById("ubicacion")
-			const selectOrganizador = document.getElementById("idOrganizador")
-
-			const spanAction = document.getElementById("action")
-			const spanId = document.getElementById("id_evento")
-			const submitBtn = document.querySelector("button[type='submit']")
-
-
-			try {
-				const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?id=" + id, {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify({
-							action: "update",
-							nombre_evento: inputNameEvent.value,
-							deporte: inputSport.value,
-							fecha: inputTime.value,
-							ubicacion: inputLocation.value,
-							idOrganizador: selectOrganizador.value
-						})
-				})
-
-				if (response.ok) {
-					alert("Evento editado correctamente")
-					getEvents()
-				} else {
-					alert("Error al editar el evento")
-				}
-
-				submitBtn.innerText = "Crear"
-				spanAction.innerText = "Crear"
-				spanId.innerText = ""
-
-				inputNameEvent.value = ""
-				inputSport.value = ""
-				inputTime.value = ""
-				inputLocation.value = ""
-				selectOrganizador.value = ""
-				
-			} catch (error) {
-					console.error("Error en la solicitud:", error)
-			}
-		}
-
-		async function deleteEvent(id) {
-			if (confirm("¿Estás seguro que deseas eliminar este evento?")) {
-				try {
-					const response = await fetch("http://localhost/carpeta/EventosDeportivosCrud/procesar.php?table=eventos&id=" + id, {
-						method: "DELETE",
-						headers: {
-							"Content-Type": "application/json"
-						}
-					})
-
-					if (response.ok) {
-						alert("Evento eliminado con éxito")
-						getEvents()
-
-					} else {
-
-						alert("Error al eliminar el evento")
-					}
-
-				} catch (error) {
-					console.error("Error en la solicitud: " + error)
-				}
-			}
-		}
-	
-		document.querySelector("form").addEventListener("submit", async (event) => {
-			event.preventDefault()
-			const spanAction = document.getElementById("action")
-			const spanId = document.getElementById("id_evento")
-
-			if (spanAction.innerText === "Editar") {
-				const id = spanId.innerText
-				await editEvent(id)
-				
-			} else {
-				await postEvents()
-			}
-		})
-	</script>
 </body>
 
 </html>

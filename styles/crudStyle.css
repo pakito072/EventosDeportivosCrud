@@ -63,16 +63,24 @@ th, td {
     text-align: center;
 }
 
-td > button:first-child{
+td > form {
+    display: inline;
+}
+
+td > a{
+    text-decoration: none;
+    padding: 1px 5px;
+    border-bottom: 2px solid darkslategrey;
+    border-right: 2px solid darkslategrey;
+
     background-color: #007CFF;
-    border-color: #007CFF;
     
     color: #f5f5f5;
     border-radius: 5px;
     margin-bottom: 3px;
 }
 
-td > button:last-child{
+td > form > button{
     background-color: #DC3544;
     border-color: #DC3544;
     color: #f5f5f5;
@@ -94,6 +102,5 @@ input{
 }
 
 ul{
-    display: none;
     color: #e9505d;
 }
