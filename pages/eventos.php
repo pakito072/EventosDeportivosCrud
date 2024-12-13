@@ -7,6 +7,14 @@ unset($_SESSION['errors']);
 $isEdit = isset($_GET['id']);
 $eventData = null;
 
+$orderBy = isset($_GET["orderBy"]) ? $_GET["orderBy"] : "id";
+$direction = isset($_GET["direction"]) ? $_GET["direction"] : "ASC";
+
+$limit = 10;
+$page = isset($_GET["page"]) ? $_GET["page"] : 1;
+$page = max(1, $page);
+$offset = ($page - 1) * $limit;
+
 if ($isEdit) {
 	$eventId = $_GET['id'];
 	$events = get("eventos");
@@ -17,6 +25,12 @@ if ($isEdit) {
 		}
 	}
 }
+
+$search = isset($_GET["search"]) ? $_GET["search"] : "";
+$events = get("eventos", $search, $orderBy, $direction, $limit, $offset);
+
+$totalEvents = countEvents($search);
+$totalPages = ceil($totalEvents / $limit);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,23 +54,39 @@ if ($isEdit) {
 				<label for="search" class="mr-2">Buscar por nombre</label>
 				<input type="text" name="search" id="search" class="form-control mr-2" placeholder="Nombre del evento">
 				<button type="submit" class="btn btn-primary">Buscar</button>
+
+				<?php if (!empty($search)): ?>
+					<a href="eventos.php" class="btn btn-secondary ml-2">Eliminar Busqueda</a>
+				<?php endif; ?>
 			</form>
 			<table class="table table-bordered">
 				<thead class="thead-dark">
-					<th>Id</th>
-					<th>Nombre Evento</th>
-					<th>Tipo Deporte</th>
-					<th>Fecha</th>
-					<th>Hora</th>
-					<th>Ubicacion</th>
-					<th>Organizador</th>
+					<th><a
+							href="?search=<?php echo urlencode($search); ?>&orderBy=id&direction=<?php echo $direction === "ASC" ? "DESC" : "ASC"; ?>">Id<?php echo $orderBy === "id" ? ($direction === "ASC" ? "⬆️" : "⬇️") : ""; ?></a>
+					</th>
+					<th><a
+							href="?search=<?php echo urlencode($search); ?>&orderBy=nombre_evento&direction=<?php echo $direction === "ASC" ? "DESC" : "ASC"; ?>">Nombre
+							Evento<?php echo $orderBy === "nombre_evento" ? ($direction === "ASC" ? "⬆️" : "⬇️") : ""; ?></a></th>
+					<th><a
+							href="?search=<?php echo urlencode($search); ?>&orderBy=tipo_deporte&direction=<?php echo $direction === "ASC" ? "DESC" : "ASC"; ?>">Tipo
+							Deporte<?php echo $orderBy === "tipo_deporte" ? ($direction === "ASC" ? "⬆️" : "⬇️") : ""; ?></a></th>
+					<th><a
+							href="?search=<?php echo urlencode($search); ?>&orderBy=fecha&direction=<?php echo $direction === "ASC" ? "DESC" : "ASC"; ?>">Fecha<?php echo $orderBy === "fecha" ? ($direction === "ASC" ? "⬆️" : "⬇️") : ""; ?></a>
+					</th>
+					<th><a
+							href="?search=<?php echo urlencode($search); ?>&orderBy=hora&direction=<?php echo $direction === "ASC" ? "DESC" : "ASC"; ?>">Hora<?php echo $orderBy === "hora" ? ($direction === "ASC" ? "⬆️" : "⬇️") : ""; ?></a>
+					</th>
+					<th><a
+							href="?search=<?php echo urlencode($search); ?>&orderBy=ubicacion&direction=<?php echo $direction === "ASC" ? "DESC" : "ASC"; ?>">Ubicación<?php echo $orderBy === "ubicacion" ? ($direction === "ASC" ? "⬆️" : "⬇️") : ""; ?></a>
+					</th>
+					<th><a
+							href="?search=<?php echo urlencode($search); ?>&orderBy=nombre_organizador&direction=<?php echo $direction === "ASC" ? "DESC" : "ASC"; ?>">Organizador<?php echo $orderBy === "nombre_organizador" ? ($direction === "ASC" ? "⬆️" : "⬇️") : ""; ?></a>
+					</th>
 					<th>Acciones</th>
 				</thead>
 
 				<tbody>
 					<?php
-					$search = isset($_GET["search"]) ? $_GET["search"] : "";
-					$events = get("eventos");
 					if (empty($events)) {
 						echo "<tr><td colspan='8'>No se ha encontrado ningún evento</td></tr>";
 					} else {
@@ -71,14 +101,16 @@ if ($isEdit) {
 								<td><?php echo $event['ubicacion']; ?></td>
 								<td><?php echo $event['nombre_organizador']; ?></td>
 								<td class="text-center">
-									<a href='eventos.php?id=<?php echo $event['id']; ?>' class='btn btn-warning btn-sm'>Editar</a>
+									<div class="btn-group-vertical" role="group">
+										<a href='eventos.php?id=<?php echo $event['id']; ?>' class='btn btn-warning btn-sm'>Editar</a>
 
-									<form action='../procesar.php' method='POST' class='d-inline'>
-										<input type='hidden' name='accion' value='DELTeventos'>
-										<input type='hidden' name='id' value='<?php echo $event['id']; ?>'>
-										<button type='submit' class='btn btn-danger btn-sm'
-											onclick='return confirm("¿Estás seguro de que deseas eliminar este evento?")'>Eliminar</button>
-									</form>
+										<form action='../procesar.php' method='POST' class='d-inline'>
+											<input type='hidden' name='accion' value='DELTeventos'>
+											<input type='hidden' name='id' value='<?php echo $event['id']; ?>'>
+											<button type='submit' class='btn btn-danger btn-sm'
+												onclick='return confirm("¿Estás seguro de que deseas eliminar este evento?")'>Eliminar</button>
+										</form>
+									</div>
 								</td>
 							</tr>
 							<?php
@@ -87,6 +119,29 @@ if ($isEdit) {
 					?>
 				</tbody>
 			</table>
+			<div class="pagination">
+				<ul class="pagination">
+					<li class="page-item <?php if ($page <= 1)
+						echo 'disabled'; ?>">
+						<a class="page-link"
+							href="?search=<?php echo urlencode($search); ?>&orderBy=<?php echo $orderBy; ?>&direction=<?php echo $direction; ?>&page=<?php echo $page - 1; ?>">Anterior</a>
+					</li>
+
+					<?php for ($i = 1; $i <= $totalPages; $i++): ?>
+						<li class="page-item <?php if ($i == $page)
+							echo 'active'; ?>">
+							<a class="page-link"
+								href="?search=<?php echo urlencode($search); ?>&orderBy=<?php echo $orderBy; ?>&direction=<?php echo $direction; ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
+						</li>
+					<?php endfor; ?>
+
+					<li class="page-item <?php if ($page >= $totalPages)
+						echo 'disabled'; ?>">
+						<a class="page-link"
+							href="?search=<?php echo urlencode($search); ?>&orderBy=<?php echo $orderBy; ?>&direction=<?php echo $direction; ?>&page=<?php echo $page + 1; ?>">Siguiente</a>
+					</li>
+				</ul>
+			</div>
 		</div>
 
 		<form action="../procesar.php" method="post" class="mt-4">
@@ -144,7 +199,8 @@ if ($isEdit) {
 			</div>
 
 			<button type="submit" class="btn btn-success"><?php echo $isEdit ? "Actualizar" : "Crear"; ?></button>
-			<div class="text-center mt-4"> <a href="../index.html" class="btn btn-primary">Volver a la Selección de Páginas</a> </div>
+			<div class="text-center mt-4"> <a href="../index.html" class="btn btn-primary">Volver a la Selección de
+					Páginas</a> </div>
 		</form>
 	</main>
 

@@ -1,7 +1,8 @@
 <?php
 session_start();
 
-function conectarDB(){
+function conectarDB()
+{
 
   $host = "localhost";
   $user = "root";
@@ -16,18 +17,31 @@ function conectarDB(){
   return $connection;
 }
 
-function get($table){
+function get($table, $search = "", $orderBy = "id", $direction = "ASC", $limit = 10, $offset = 0)
+{
   $conn = conectarDB();
 
-  if($table === "organizadores"){
+  if ($table === "organizadores") {
     $sql = "SELECT * FROM organizadores";
-  }else{
+  } else {
     $sql = "SELECT eventos.*, organizadores.nombre AS nombre_organizador
             FROM eventos
-            JOIN organizadores ON eventos.id_organizador = organizadores.id;";
+            JOIN organizadores ON eventos.id_organizador = organizadores.id";
+
+    if (!empty($search)) {
+      $search = $conn->real_escape_string($search);
+      $sql .= " WHERE eventos.nombre_evento LIKE '%$search'";
+    }
+
+    $sql .= " ORDER BY $orderBy $direction LIMIT $limit OFFSET $offset";
+
   }
-  
+
   $result = $conn->query($sql);
+
+  if ($result === false) {
+    die("Error al ejecutar la consulta: " . $conn->error);
+  }
 
   $arrayResult = [];
   if ($result->num_rows > 0) {
@@ -39,10 +53,11 @@ function get($table){
   return $arrayResult;
 }
 
-function post($accion){
+function post($accion)
+{
   $conn = conectarDB();
   $table = substr($accion, 4);
-  
+
   if ($table === "organizadores") {
 
     $regexEmail = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
@@ -54,19 +69,19 @@ function post($accion){
 
     if (empty($inputName)) {
       $errors[] = "El nombre es obligatorio";
-    }else if (strlen($inputName) < 2) {
+    } else if (strlen($inputName) < 2) {
       $errors[] = "El usuario debe contener mas de 2 caracteres";
     }
 
     if (empty($inputEmail)) {
       $errors[] = "El correo electronico es obligatorio";
-    }else if (!preg_match($regexEmail, $inputEmail)) {
+    } else if (!preg_match($regexEmail, $inputEmail)) {
       $errors[] = "El correo debe mantener la estructura de un correo electronico";
     }
 
     if (empty($inputNumber)) {
       $errors[] = "El numero de telefono es obligatorio";
-    }else if (!preg_match($regexNumber, $inputNumber)) {
+    } else if (!preg_match($regexNumber, $inputNumber)) {
       $errors[] = "El numero de telefono deve contener 9 digitos";
     }
 
@@ -75,8 +90,8 @@ function post($accion){
       header("Location: pages/organizadores.php");
       $conn->close();
       exit();
-      
-    }else {
+
+    } else {
 
       $columns = "(nombre, email, telefono)";
       $values = [
@@ -97,13 +112,13 @@ function post($accion){
 
     if (empty($inputNombreEvento)) {
       $errors[] = "El nombre del evento es obligatorio";
-    }else if (strlen($inputNombreEvento) < 2) {
+    } else if (strlen($inputNombreEvento) < 2) {
       $errors[] = "El nombre del evento debe contener más de 2 caracteres";
     }
 
     if (empty($inputDeporte)) {
       $errors[] = "El tipo de deporte es obligatorio";
-    }else if (strlen($inputDeporte) < 2) {
+    } else if (strlen($inputDeporte) < 2) {
       $errors[] = "El tipo de deportedebe contener más de 2 caracteres";
     }
 
@@ -161,7 +176,8 @@ function post($accion){
   }
 }
 
-function put($id){
+function put($id)
+{
   $conn = conectarDB();
 
   $inputNombreEvento = isset($_POST['nombre_evento']) ? trim($_POST['nombre_evento']) : '';
@@ -173,13 +189,13 @@ function put($id){
 
   if (empty($inputNombreEvento)) {
     $errors[] = "El nombre del evento es obligatorio";
-  }else if (strlen($inputNombreEvento) < 2) {
+  } else if (strlen($inputNombreEvento) < 2) {
     $errors[] = "El nombre del evento debe contener más de 2 caracteres";
   }
 
   if (empty($inputDeporte)) {
     $errors[] = "El tipo de deporte es obligatorio";
-  }else if (strlen($inputDeporte) < 2) {
+  } else if (strlen($inputDeporte) < 2) {
     $errors[] = "El tipo de deportedebe contener más de 2 caracteres";
   }
 
@@ -204,7 +220,7 @@ function put($id){
   $id = (int) $id;
   list($date, $time) = explode('T', $datetime);
 
-  
+
   $stmt = $conn->prepare("UPDATE eventos SET nombre_evento = ?, tipo_deporte = ?, fecha = ?, hora = ?, ubicacion = ?, id_organizador = ? WHERE id = ?");
   $stmt->bind_param("ssssssi", $inputNombreEvento, $inputDeporte, $date, $time, $inputUbicacion, $idOrganizador, $id);
 
@@ -229,7 +245,8 @@ function put($id){
   }
 }
 
-function delete($accion){
+function delete($accion)
+{
   $conn = conectarDB();
 
   $id = $_POST['id'];
@@ -254,7 +271,7 @@ function delete($accion){
       exit();
     }
   }
-  
+
   $stmt = $conn->prepare("DELETE FROM $table WHERE id = ?");
   $stmt->bind_param("i", $id);
 
@@ -271,7 +288,7 @@ function delete($accion){
   } else {
     $stmt->close();
     $conn->close();
-    
+
     echo "<script>
             alert('Se ha producido un error');
             window.location.href = './pages/$table.php';
@@ -280,10 +297,25 @@ function delete($accion){
   }
 }
 
+function countEvents($search = "")
+{
+  $conn = conectarDB();
+  $sql = "SELECT COUNT(*) as total FROM eventos";
+
+  if (!empty($search)) {
+    $search = $conn->real_escape_string($search);
+    $sql .= " WHERE nombre_evento LIKE '%$search%'";
+  }
+
+  $result = $conn->query($sql);
+  $row = $result->fetch_assoc();
+  return $row["total"];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   $method = substr($_POST['accion'], 0, 4);
-  
+
   switch ($method) {
 
     case 'POST':
@@ -301,7 +333,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       break;
 
     default:
-        break;
+      break;
   }
 }
 
